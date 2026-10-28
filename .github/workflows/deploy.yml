@@ -1,0 +1,246 @@
+name: AI Chatbot Production Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+    inputs:
+      execute_pipeline:
+        description: "Authorize CI/CD and Deployments?"
+        type: boolean
+        required: true
+        default: true
+      enable_aws:
+        description: "Deploy to AWS (ECR/S3/CodeDeploy)?"
+        type: boolean
+        required: true
+        default: true
+
+# Ensure only one deployment runs at a time per branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  # Master pipeline execution permission toggle
+  EXECUTE_PIPELINE: "true"
+
+  # AWS platform deployment toggle
+  ENABLE_AWS: "true"
+
+  # AWS cloud resource settings
+  AWS_REGION: ap-southeast-2
+  ECR_REPOSITORY: ai-chatbot
+  S3_DEPLOYMENT_BUCKET: ai-chatbot-deployments
+  CODEDEPLOY_APPLICATION_NAME: ai-chatbot-app
+  CODEDEPLOY_DEPLOYMENT_GROUP: ai-chatbot-group
+
+jobs:
+  # ----------------------------------------------------------------------------
+  # 1. Gatekeeper: Verify pipeline permission and deployment target
+  # ----------------------------------------------------------------------------
+  verify-permission:
+    name: Verify Execution Permission
+    runs-on: ubuntu-latest
+    outputs:
+      authorized: ${{ steps.gatekeeper.outputs.authorized }}
+      deploy_aws: ${{ steps.gatekeeper.outputs.deploy_aws }}
+    steps:
+      - name: Evaluate Permission
+        id: gatekeeper
+        run: |
+          if [ "${{ env.EXECUTE_PIPELINE }}" = "true" ] || [ "${{ inputs.execute_pipeline }}" = "true" ]; then
+            echo "authorized=true" >> $GITHUB_OUTPUT
+            echo "Pipeline execution AUTHORIZED."
+          else
+            echo "authorized=false" >> $GITHUB_OUTPUT
+            echo "Pipeline execution BLOCKED (EXECUTE_PIPELINE is '${{ env.EXECUTE_PIPELINE }}')."
+          fi
+
+          if [ "${{ env.ENABLE_AWS }}" = "true" ] && [ "${{ inputs.enable_aws }}" != "false" ]; then
+            echo "deploy_aws=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_aws=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ----------------------------------------------------------------------------
+  # 2. CI: Code validation, Frontend build, Linting & Python smoke tests
+  # ----------------------------------------------------------------------------
+  ci:
+    name: CI - Code Validation & Smoke Tests
+    needs: verify-permission
+    if: needs.verify-permission.outputs.authorized == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # Frontend Validation
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Validate & Build React Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      # Backend Validation
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 -r backend/requirements.txt
+
+      - name: Lint Critical Python Syntax Errors
+        run: |
+          flake8 backend --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Validate Python Compilation
+        run: |
+          python -c "
+          import py_compile, os
+          count = 0
+          for root, _, files in os.walk('backend'):
+              if any(p in root for p in ['.git', '__pycache__', '.venv']): continue
+              for f in files:
+                  if f.endswith('.py'):
+                      py_compile.compile(os.path.join(root, f), doraise=True)
+                      count += 1
+          print(f'Successfully compiled {count} Python backend files with zero syntax errors.')
+          "
+
+      - name: Run Core Backend Smoke Test
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, 'backend')
+          from conf.app import app
+          from chatbot.schemas import ChatMessageRequest
+          assert app is not None
+          assert ChatMessageRequest is not None
+          print('Chatbot backend FastAPI configuration and schemas passed CI smoke test.')
+          "
+
+  # ----------------------------------------------------------------------------
+  # 3. CD: Build Container, Health Check, Push to ECR, Deploy to EC2
+  # ----------------------------------------------------------------------------
+  deploy-aws:
+    name: CD - Deploy to AWS (ECR and EC2)
+    needs: [verify-permission, ci]
+    if: needs.verify-permission.outputs.authorized == 'true' && needs.verify-permission.outputs.deploy_aws == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image Locally
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: app:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Test Container Health Check
+        run: |
+          docker run -d --name test_container \
+            -e SKIP_CHROMA_TRAIN=true \
+            -p 8503:80 \
+            -p 8002:8000 \
+            app:${{ github.sha }}
+
+          # Poll health endpoint for up to 40 seconds
+          HEALTHY=false
+          for i in {1..20}; do
+            sleep 2
+            if curl -sf http://localhost:8002/health | grep -q "ok"; then
+              echo "FastAPI backend container passed pre-deployment health check on port 8002."
+              HEALTHY=true
+              break
+            fi
+            echo "Waiting for container startup... ($i/20)"
+          done
+
+          if [ "$HEALTHY" != "true" ]; then
+            echo "=== Health check failed! Dumping container logs: ==="
+            docker logs test_container
+            docker stop test_container || true
+            docker rm test_container || true
+            exit 1
+          fi
+
+          # Verify both FastAPI direct health and Nginx reverse proxy health
+          curl --fail http://localhost:8002/health
+          curl --fail http://localhost:8503/health
+          docker stop test_container
+          docker rm test_container
+
+      - name: Push Docker Image to Amazon ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker tag app:${{ github.sha }} $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          docker tag app:${{ github.sha }} $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest
+
+          docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          docker push $ECR_REGISTRY/${{ env.ECR_REPOSITORY }}:latest
+          echo "Pushed image tags to ECR: ${{ github.sha }} and latest"
+
+      - name: Package CodeDeploy Bundle
+        run: |
+          chmod +x deploy/scripts/*.sh
+          zip -r deployment.zip \
+            appspec.yml \
+            deploy/scripts/install_dependencies.sh \
+            deploy/scripts/stop_docker.sh \
+            deploy/scripts/start_docker.sh
+
+      - name: Upload Deployment Artifact to S3
+        run: |
+          aws s3 cp deployment.zip s3://${{ env.S3_DEPLOYMENT_BUCKET }}/deployment.zip
+
+      - name: Trigger AWS CodeDeploy
+        run: |
+          DEPLOYMENT_ID=$(aws deploy create-deployment \
+            --application-name ${{ env.CODEDEPLOY_APPLICATION_NAME }} \
+            --deployment-group-name ${{ env.CODEDEPLOY_DEPLOYMENT_GROUP }} \
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --s3-location bucket=${{ env.S3_DEPLOYMENT_BUCKET }},key=deployment.zip,bundleType=zip \
+            --file-exists-behavior OVERWRITE \
+            --region ${{ env.AWS_REGION }} \
+            --query "deploymentId" \
+            --output text)
+          echo "AWS CodeDeploy deployment triggered successfully. Deployment ID: $DEPLOYMENT_ID"

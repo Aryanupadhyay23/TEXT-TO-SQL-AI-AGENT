@@ -1,0 +1,87 @@
+{
+  "table_name": "stock_movements",
+  "database": "ecommerce_db",
+  "description": "Immutable audit trail of inventory adjustments",
+  "approximate_rows": 0,
+  "total_columns": 7,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "inventory_item_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "movement_type",
+      "data_type": "enum",
+      "column_type": "enum('inbound_purchase','outbound_order','return_restock','cycle_adjustment','scrap_damaged')",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "quantity_changed",
+      "data_type": "int",
+      "column_type": "int",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Signed change (+X received, -Y fulfilled)"
+    },
+    {
+      "name": "reference_id",
+      "data_type": "varchar",
+      "column_type": "varchar(100)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Order number, PO number, or RMA ticket reference"
+    },
+    {
+      "name": "notes",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "inventory_item_id",
+      "referenced_table": "inventory_items",
+      "referenced_column": "id",
+      "constraint_name": "fk_sm_item"
+    }
+  ]
+}

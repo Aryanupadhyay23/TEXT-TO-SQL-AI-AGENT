@@ -1,0 +1,446 @@
+{
+  "database": "ecommerce_db",
+  "total_relationships": 55,
+  "relationships": [
+    {
+      "from_table": "cart_items",
+      "from_column": "variant_id",
+      "to_table": "product_variants",
+      "to_column": "id",
+      "join_condition": "cart_items.variant_id = product_variants.id",
+      "constraint_name": "fk_ci_variant"
+    },
+    {
+      "from_table": "cart_items",
+      "from_column": "cart_id",
+      "to_table": "shopping_carts",
+      "to_column": "id",
+      "join_condition": "cart_items.cart_id = shopping_carts.id",
+      "constraint_name": "fk_ci_cart"
+    },
+    {
+      "from_table": "categories",
+      "from_column": "parent_id",
+      "to_table": "categories",
+      "to_column": "id",
+      "join_condition": "categories.parent_id = categories.id",
+      "constraint_name": "fk_cat_parent"
+    },
+    {
+      "from_table": "coupon_redemptions",
+      "from_column": "coupon_id",
+      "to_table": "coupons",
+      "to_column": "id",
+      "join_condition": "coupon_redemptions.coupon_id = coupons.id",
+      "constraint_name": "fk_cr_coupon"
+    },
+    {
+      "from_table": "coupon_redemptions",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "id",
+      "join_condition": "coupon_redemptions.order_id = orders.id",
+      "constraint_name": "fk_cr_order_user"
+    },
+    {
+      "from_table": "coupon_redemptions",
+      "from_column": "user_id",
+      "to_table": "orders",
+      "to_column": "user_id",
+      "join_condition": "coupon_redemptions.user_id = orders.user_id",
+      "constraint_name": "fk_cr_order_user"
+    },
+    {
+      "from_table": "customer_profiles",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "join_condition": "customer_profiles.user_id = users.id",
+      "constraint_name": "fk_profile_user"
+    },
+    {
+      "from_table": "inventory_items",
+      "from_column": "variant_id",
+      "to_table": "product_variants",
+      "to_column": "id",
+      "join_condition": "inventory_items.variant_id = product_variants.id",
+      "constraint_name": "fk_inv_variant"
+    },
+    {
+      "from_table": "inventory_items",
+      "from_column": "warehouse_id",
+      "to_table": "warehouses",
+      "to_column": "id",
+      "join_condition": "inventory_items.warehouse_id = warehouses.id",
+      "constraint_name": "fk_inv_warehouse"
+    },
+    {
+      "from_table": "order_items",
+      "from_column": "category_id",
+      "to_table": "categories",
+      "to_column": "id",
+      "join_condition": "order_items.category_id = categories.id",
+      "constraint_name": "fk_oi_category"
+    },
+    {
+      "from_table": "order_items",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "id",
+      "join_condition": "order_items.order_id = orders.id",
+      "constraint_name": "fk_oi_order"
+    },
+    {
+      "from_table": "order_items",
+      "from_column": "product_id",
+      "to_table": "products",
+      "to_column": "id",
+      "join_condition": "order_items.product_id = products.id",
+      "constraint_name": "fk_oi_product"
+    },
+    {
+      "from_table": "order_items",
+      "from_column": "variant_id",
+      "to_table": "product_variants",
+      "to_column": "id",
+      "join_condition": "order_items.variant_id = product_variants.id",
+      "constraint_name": "fk_oi_variant"
+    },
+    {
+      "from_table": "order_status_history",
+      "from_column": "changed_by_user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "join_condition": "order_status_history.changed_by_user_id = users.id",
+      "constraint_name": "fk_osh_user"
+    },
+    {
+      "from_table": "order_status_history",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "id",
+      "join_condition": "order_status_history.order_id = orders.id",
+      "constraint_name": "fk_osh_order"
+    },
+    {
+      "from_table": "orders",
+      "from_column": "billing_address_id",
+      "to_table": "user_addresses",
+      "to_column": "id",
+      "join_condition": "orders.billing_address_id = user_addresses.id",
+      "constraint_name": "fk_ord_bill_addr_user"
+    },
+    {
+      "from_table": "orders",
+      "from_column": "shipping_address_id",
+      "to_table": "user_addresses",
+      "to_column": "id",
+      "join_condition": "orders.shipping_address_id = user_addresses.id",
+      "constraint_name": "fk_ord_ship_addr_user"
+    },
+    {
+      "from_table": "orders",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "join_condition": "orders.user_id = users.id",
+      "constraint_name": "fk_ord_user"
+    },
+    {
+      "from_table": "orders",
+      "from_column": "user_id",
+      "to_table": "user_addresses",
+      "to_column": "user_id",
+      "join_condition": "orders.user_id = user_addresses.user_id",
+      "constraint_name": "fk_ord_bill_addr_user"
+    },
+    {
+      "from_table": "orders",
+      "from_column": "user_id",
+      "to_table": "user_addresses",
+      "to_column": "user_id",
+      "join_condition": "orders.user_id = user_addresses.user_id",
+      "constraint_name": "fk_ord_ship_addr_user"
+    },
+    {
+      "from_table": "payments",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "id",
+      "join_condition": "payments.order_id = orders.id",
+      "constraint_name": "fk_pay_order"
+    },
+    {
+      "from_table": "product_images",
+      "from_column": "product_id",
+      "to_table": "products",
+      "to_column": "id",
+      "join_condition": "product_images.product_id = products.id",
+      "constraint_name": "fk_img_product"
+    },
+    {
+      "from_table": "product_images",
+      "from_column": "variant_id",
+      "to_table": "product_variants",
+      "to_column": "id",
+      "join_condition": "product_images.variant_id = product_variants.id",
+      "constraint_name": "fk_img_variant_composite"
+    },
+    {
+      "from_table": "product_images",
+      "from_column": "product_id",
+      "to_table": "product_variants",
+      "to_column": "product_id",
+      "join_condition": "product_images.product_id = product_variants.product_id",
+      "constraint_name": "fk_img_variant_composite"
+    },
+    {
+      "from_table": "product_reviews",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "join_condition": "product_reviews.user_id = users.id",
+      "constraint_name": "fk_rev_user"
+    },
+    {
+      "from_table": "product_reviews",
+      "from_column": "product_id",
+      "to_table": "products",
+      "to_column": "id",
+      "join_condition": "product_reviews.product_id = products.id",
+      "constraint_name": "fk_rev_product"
+    },
+    {
+      "from_table": "product_reviews",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "id",
+      "join_condition": "product_reviews.order_id = orders.id",
+      "constraint_name": "fk_rev_order_user"
+    },
+    {
+      "from_table": "product_reviews",
+      "from_column": "order_item_id",
+      "to_table": "order_items",
+      "to_column": "id",
+      "join_condition": "product_reviews.order_item_id = order_items.id",
+      "constraint_name": "fk_rev_order_item_product"
+    },
+    {
+      "from_table": "product_reviews",
+      "from_column": "user_id",
+      "to_table": "orders",
+      "to_column": "user_id",
+      "join_condition": "product_reviews.user_id = orders.user_id",
+      "constraint_name": "fk_rev_order_user"
+    },
+    {
+      "from_table": "product_reviews",
+      "from_column": "order_id",
+      "to_table": "order_items",
+      "to_column": "order_id",
+      "join_condition": "product_reviews.order_id = order_items.order_id",
+      "constraint_name": "fk_rev_order_item_product"
+    },
+    {
+      "from_table": "product_reviews",
+      "from_column": "product_id",
+      "to_table": "order_items",
+      "to_column": "product_id",
+      "join_condition": "product_reviews.product_id = order_items.product_id",
+      "constraint_name": "fk_rev_order_item_product"
+    },
+    {
+      "from_table": "product_variants",
+      "from_column": "product_id",
+      "to_table": "products",
+      "to_column": "id",
+      "join_condition": "product_variants.product_id = products.id",
+      "constraint_name": "fk_variant_product"
+    },
+    {
+      "from_table": "products",
+      "from_column": "brand_id",
+      "to_table": "brands",
+      "to_column": "id",
+      "join_condition": "products.brand_id = brands.id",
+      "constraint_name": "fk_prod_brand"
+    },
+    {
+      "from_table": "products",
+      "from_column": "category_id",
+      "to_table": "categories",
+      "to_column": "id",
+      "join_condition": "products.category_id = categories.id",
+      "constraint_name": "fk_prod_category"
+    },
+    {
+      "from_table": "refunds",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "id",
+      "join_condition": "refunds.order_id = orders.id",
+      "constraint_name": "fk_ref_order"
+    },
+    {
+      "from_table": "refunds",
+      "from_column": "payment_id",
+      "to_table": "payments",
+      "to_column": "id",
+      "join_condition": "refunds.payment_id = payments.id",
+      "constraint_name": "fk_ref_payment_order"
+    },
+    {
+      "from_table": "refunds",
+      "from_column": "order_id",
+      "to_table": "payments",
+      "to_column": "order_id",
+      "join_condition": "refunds.order_id = payments.order_id",
+      "constraint_name": "fk_ref_payment_order"
+    },
+    {
+      "from_table": "return_items",
+      "from_column": "order_item_id",
+      "to_table": "order_items",
+      "to_column": "id",
+      "join_condition": "return_items.order_item_id = order_items.id",
+      "constraint_name": "fk_ri_item_composite"
+    },
+    {
+      "from_table": "return_items",
+      "from_column": "return_request_id",
+      "to_table": "return_requests",
+      "to_column": "id",
+      "join_condition": "return_items.return_request_id = return_requests.id",
+      "constraint_name": "fk_ri_request_composite"
+    },
+    {
+      "from_table": "return_items",
+      "from_column": "order_id",
+      "to_table": "order_items",
+      "to_column": "order_id",
+      "join_condition": "return_items.order_id = order_items.order_id",
+      "constraint_name": "fk_ri_item_composite"
+    },
+    {
+      "from_table": "return_items",
+      "from_column": "order_id",
+      "to_table": "return_requests",
+      "to_column": "order_id",
+      "join_condition": "return_items.order_id = return_requests.order_id",
+      "constraint_name": "fk_ri_request_composite"
+    },
+    {
+      "from_table": "return_requests",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "id",
+      "join_condition": "return_requests.order_id = orders.id",
+      "constraint_name": "fk_rma_order_user"
+    },
+    {
+      "from_table": "return_requests",
+      "from_column": "user_id",
+      "to_table": "orders",
+      "to_column": "user_id",
+      "join_condition": "return_requests.user_id = orders.user_id",
+      "constraint_name": "fk_rma_order_user"
+    },
+    {
+      "from_table": "review_helpful_votes",
+      "from_column": "review_id",
+      "to_table": "product_reviews",
+      "to_column": "id",
+      "join_condition": "review_helpful_votes.review_id = product_reviews.id",
+      "constraint_name": "fk_rhv_review"
+    },
+    {
+      "from_table": "review_helpful_votes",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "join_condition": "review_helpful_votes.user_id = users.id",
+      "constraint_name": "fk_rhv_user"
+    },
+    {
+      "from_table": "shipments",
+      "from_column": "order_id",
+      "to_table": "orders",
+      "to_column": "id",
+      "join_condition": "shipments.order_id = orders.id",
+      "constraint_name": "fk_ship_order"
+    },
+    {
+      "from_table": "shipments",
+      "from_column": "warehouse_id",
+      "to_table": "warehouses",
+      "to_column": "id",
+      "join_condition": "shipments.warehouse_id = warehouses.id",
+      "constraint_name": "fk_ship_wh"
+    },
+    {
+      "from_table": "shopping_carts",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "join_condition": "shopping_carts.user_id = users.id",
+      "constraint_name": "fk_cart_user"
+    },
+    {
+      "from_table": "stock_movements",
+      "from_column": "inventory_item_id",
+      "to_table": "inventory_items",
+      "to_column": "id",
+      "join_condition": "stock_movements.inventory_item_id = inventory_items.id",
+      "constraint_name": "fk_sm_item"
+    },
+    {
+      "from_table": "user_addresses",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "join_condition": "user_addresses.user_id = users.id",
+      "constraint_name": "fk_address_user"
+    },
+    {
+      "from_table": "wishlist_items",
+      "from_column": "product_id",
+      "to_table": "products",
+      "to_column": "id",
+      "join_condition": "wishlist_items.product_id = products.id",
+      "constraint_name": "fk_wi_product"
+    },
+    {
+      "from_table": "wishlist_items",
+      "from_column": "variant_id",
+      "to_table": "product_variants",
+      "to_column": "id",
+      "join_condition": "wishlist_items.variant_id = product_variants.id",
+      "constraint_name": "fk_wi_variant_composite"
+    },
+    {
+      "from_table": "wishlist_items",
+      "from_column": "wishlist_id",
+      "to_table": "wishlists",
+      "to_column": "id",
+      "join_condition": "wishlist_items.wishlist_id = wishlists.id",
+      "constraint_name": "fk_wi_wishlist"
+    },
+    {
+      "from_table": "wishlist_items",
+      "from_column": "product_id",
+      "to_table": "product_variants",
+      "to_column": "product_id",
+      "join_condition": "wishlist_items.product_id = product_variants.product_id",
+      "constraint_name": "fk_wi_variant_composite"
+    },
+    {
+      "from_table": "wishlists",
+      "from_column": "user_id",
+      "to_table": "users",
+      "to_column": "id",
+      "join_condition": "wishlists.user_id = users.id",
+      "constraint_name": "fk_wish_user"
+    }
+  ]
+}

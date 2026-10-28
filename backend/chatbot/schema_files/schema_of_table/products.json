@@ -1,0 +1,183 @@
+{
+  "table_name": "products",
+  "database": "ecommerce_db",
+  "description": "Primary catalog merchandise entity",
+  "approximate_rows": 4,
+  "total_columns": 16,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "brand_id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Associated manufacturer brand"
+    },
+    {
+      "name": "category_id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Primary catalog classification"
+    },
+    {
+      "name": "name",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Product title"
+    },
+    {
+      "name": "slug",
+      "data_type": "varchar",
+      "column_type": "varchar(280)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "SEO slug"
+    },
+    {
+      "name": "sku_prefix",
+      "data_type": "varchar",
+      "column_type": "varchar(32)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Unique vendor catalog code prefix"
+    },
+    {
+      "name": "short_description",
+      "data_type": "varchar",
+      "column_type": "varchar(500)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Elevator summary for search snippet cards"
+    },
+    {
+      "name": "description",
+      "data_type": "longtext",
+      "column_type": "longtext",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Rich HTML or Markdown product specification"
+    },
+    {
+      "name": "base_price",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Standard retail reference price"
+    },
+    {
+      "name": "cost_price",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Wholesale unit acquisition cost for margin metrics"
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('draft','active','archived')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "active",
+      "extra": "",
+      "comment": "Merchandise lifecycle state"
+    },
+    {
+      "name": "is_featured",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Storefront spotlight showcase toggle"
+    },
+    {
+      "name": "rating_average",
+      "data_type": "decimal",
+      "column_type": "decimal(3,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Precomputed rolling average rating (1.00 - 5.00)"
+    },
+    {
+      "name": "rating_count",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Total verified review volume"
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    },
+    {
+      "name": "updated_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "brand_id",
+      "referenced_table": "brands",
+      "referenced_column": "id",
+      "constraint_name": "fk_prod_brand"
+    },
+    {
+      "column": "category_id",
+      "referenced_table": "categories",
+      "referenced_column": "id",
+      "constraint_name": "fk_prod_category"
+    }
+  ]
+}

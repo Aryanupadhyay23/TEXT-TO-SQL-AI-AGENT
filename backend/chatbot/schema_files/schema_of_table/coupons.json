@@ -1,0 +1,140 @@
+{
+  "table_name": "coupons",
+  "database": "ecommerce_db",
+  "description": "Voucher and coupon promotion rules",
+  "approximate_rows": 3,
+  "total_columns": 13,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "code",
+      "data_type": "varchar",
+      "column_type": "varchar(50)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Discount promo code (e.g. WELCOME20, WINTER50)"
+    },
+    {
+      "name": "discount_type",
+      "data_type": "enum",
+      "column_type": "enum('percentage','fixed_amount','free_shipping')",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "discount_value",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "E.g. 20.00 for 20% or $20.00 off"
+    },
+    {
+      "name": "minimum_order_amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "max_discount_amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Cap for percentage coupons (e.g. max $50 off)"
+    },
+    {
+      "name": "usage_limit_total",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Max redemptions overall (null = unlimited)"
+    },
+    {
+      "name": "usage_limit_per_user",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": "Max redemptions per customer"
+    },
+    {
+      "name": "times_used",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Maintained automatically in sync via database triggers"
+    },
+    {
+      "name": "starts_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "expires_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "is_active",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": []
+}

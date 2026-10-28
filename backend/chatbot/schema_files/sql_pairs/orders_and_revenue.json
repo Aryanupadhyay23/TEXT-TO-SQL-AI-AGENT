@@ -1,0 +1,51 @@
+{
+  "domain": "orders_and_revenue",
+  "description": "Golden SQL pairs for sales, order performance, payment transactions, and financial analytics.",
+  "sql_pairs": [
+    {
+      "question": "What is the total sales revenue and total count of delivered orders?",
+      "sql": "SELECT COUNT(*) AS total_delivered_orders, SUM(total_amount) AS total_revenue, AVG(total_amount) AS average_order_value FROM orders WHERE status = 'delivered';",
+      "tables": "orders"
+    },
+    {
+      "question": "Show monthly revenue breakdown and order counts for 2025.",
+      "sql": "SELECT DATE_FORMAT(placed_at, '%Y-%m') AS order_month, COUNT(*) AS total_orders, SUM(total_amount) AS monthly_revenue FROM orders WHERE status IN ('delivered', 'shipped') AND YEAR(placed_at) = 2025 GROUP BY DATE_FORMAT(placed_at, '%Y-%m') ORDER BY order_month ASC;",
+      "tables": "orders"
+    },
+    {
+      "question": "What is the total order volume grouped by order status?",
+      "sql": "SELECT status, COUNT(*) AS order_count, SUM(total_amount) AS total_amount_sum FROM orders GROUP BY status ORDER BY order_count DESC;",
+      "tables": "orders"
+    },
+    {
+      "question": "List the top 10 largest orders by grand total with customer name and shipping city.",
+      "sql": "SELECT o.id, o.order_number, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, ua.city, ua.state_province, o.total_amount, o.placed_at FROM orders o JOIN users u ON o.user_id = u.id JOIN user_addresses ua ON o.shipping_address_id = ua.id ORDER BY o.total_amount DESC LIMIT 10;",
+      "tables": "orders, users, user_addresses"
+    },
+    {
+      "question": "Show payment methods breakdown with total captured revenue.",
+      "sql": "SELECT payment_method, COUNT(*) AS transaction_count, SUM(amount) AS total_captured_revenue FROM payments WHERE status = 'captured' GROUP BY payment_method ORDER BY total_captured_revenue DESC;",
+      "tables": "payments"
+    },
+    {
+      "question": "What is the total tax collected and shipping fees charged across all completed orders?",
+      "sql": "SELECT SUM(tax_amount) AS total_tax_collected, SUM(shipping_amount) AS total_shipping_revenue, SUM(subtotal_amount) AS total_subtotal FROM orders WHERE status IN ('delivered', 'shipped');",
+      "tables": "orders"
+    },
+    {
+      "question": "Show the latest 10 orders placed with customer email and current status.",
+      "sql": "SELECT o.id, o.order_number, u.email, o.status, o.total_amount, o.placed_at FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.placed_at DESC LIMIT 10;",
+      "tables": "orders, users"
+    },
+    {
+      "question": "Find orders containing more than 2 distinct line items.",
+      "sql": "SELECT o.id, o.order_number, COUNT(oi.id) AS item_count, o.total_amount FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_number, o.total_amount HAVING COUNT(oi.id) > 2 ORDER BY item_count DESC LIMIT 10;",
+      "tables": "orders, order_items"
+    },
+    {
+      "question": "What is the average order discount amount among orders that received discounts?",
+      "sql": "SELECT COUNT(*) AS discounted_orders_count, ROUND(AVG(discount_amount), 2) AS avg_discount, SUM(discount_amount) AS total_discounts_granted FROM orders WHERE discount_amount > 0.00;",
+      "tables": "orders"
+    }
+  ]
+}

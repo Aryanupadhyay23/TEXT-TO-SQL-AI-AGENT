@@ -1,0 +1,109 @@
+{
+  "table_name": "product_images",
+  "database": "ecommerce_db",
+  "description": "Gallery and gallery thumbnails for products and variants",
+  "approximate_rows": 4,
+  "total_columns": 8,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "product_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "variant_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "image_url",
+      "data_type": "varchar",
+      "column_type": "varchar(500)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "High-resolution CDN URL"
+    },
+    {
+      "name": "alt_text",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Accessibility and search keyword text"
+    },
+    {
+      "name": "display_order",
+      "data_type": "smallint",
+      "column_type": "smallint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "is_thumbnail",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "product_id",
+      "referenced_table": "products",
+      "referenced_column": "id",
+      "constraint_name": "fk_img_product"
+    },
+    {
+      "column": "variant_id",
+      "referenced_table": "product_variants",
+      "referenced_column": "id",
+      "constraint_name": "fk_img_variant_composite"
+    },
+    {
+      "column": "product_id",
+      "referenced_table": "product_variants",
+      "referenced_column": "product_id",
+      "constraint_name": "fk_img_variant_composite"
+    }
+  ]
+}

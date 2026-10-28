@@ -1,0 +1,165 @@
+{
+  "table_name": "order_items",
+  "database": "ecommerce_db",
+  "description": "Individual line items contained within an order",
+  "approximate_rows": 8,
+  "total_columns": 13,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "order_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "variant_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Null allowed if catalog variant was deleted later"
+    },
+    {
+      "name": "product_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Direct parent product reference for review verification"
+    },
+    {
+      "name": "category_id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Historical category snapshot at checkout"
+    },
+    {
+      "name": "product_name",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Denormalized product name snapshot"
+    },
+    {
+      "name": "variant_title",
+      "data_type": "varchar",
+      "column_type": "varchar(150)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Denormalized variant attributes snapshot"
+    },
+    {
+      "name": "sku",
+      "data_type": "varchar",
+      "column_type": "varchar(64)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "SKU code at order time"
+    },
+    {
+      "name": "quantity",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "unit_price",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Unit price charged"
+    },
+    {
+      "name": "unit_cost",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Unit cost at purchase for gross margin computation"
+    },
+    {
+      "name": "discount_amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "total_price",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "(unit_price * quantity) - discount_amount"
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "category_id",
+      "referenced_table": "categories",
+      "referenced_column": "id",
+      "constraint_name": "fk_oi_category"
+    },
+    {
+      "column": "order_id",
+      "referenced_table": "orders",
+      "referenced_column": "id",
+      "constraint_name": "fk_oi_order"
+    },
+    {
+      "column": "product_id",
+      "referenced_table": "products",
+      "referenced_column": "id",
+      "constraint_name": "fk_oi_product"
+    },
+    {
+      "column": "variant_id",
+      "referenced_table": "product_variants",
+      "referenced_column": "id",
+      "constraint_name": "fk_oi_variant"
+    }
+  ]
+}

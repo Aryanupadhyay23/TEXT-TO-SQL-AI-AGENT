@@ -1,0 +1,83 @@
+{
+  "table_name": "cart_items",
+  "database": "ecommerce_db",
+  "description": "Cart line items",
+  "approximate_rows": 2,
+  "total_columns": 6,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "cart_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "variant_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "quantity",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "unit_price",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Snapshot of variant unit price when item was added"
+    },
+    {
+      "name": "added_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "variant_id",
+      "referenced_table": "product_variants",
+      "referenced_column": "id",
+      "constraint_name": "fk_ci_variant"
+    },
+    {
+      "column": "cart_id",
+      "referenced_table": "shopping_carts",
+      "referenced_column": "id",
+      "constraint_name": "fk_ci_cart"
+    }
+  ]
+}

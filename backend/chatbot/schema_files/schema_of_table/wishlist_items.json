@@ -1,0 +1,95 @@
+{
+  "table_name": "wishlist_items",
+  "database": "ecommerce_db",
+  "description": "Individual merchandise items saved within a wishlist",
+  "approximate_rows": 4,
+  "total_columns": 6,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "wishlist_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "product_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "variant_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Optional specific SKU variant"
+    },
+    {
+      "name": "effective_variant_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "VIRTUAL GENERATED",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "product_id",
+      "referenced_table": "products",
+      "referenced_column": "id",
+      "constraint_name": "fk_wi_product"
+    },
+    {
+      "column": "variant_id",
+      "referenced_table": "product_variants",
+      "referenced_column": "id",
+      "constraint_name": "fk_wi_variant_composite"
+    },
+    {
+      "column": "wishlist_id",
+      "referenced_table": "wishlists",
+      "referenced_column": "id",
+      "constraint_name": "fk_wi_wishlist"
+    },
+    {
+      "column": "product_id",
+      "referenced_table": "product_variants",
+      "referenced_column": "product_id",
+      "constraint_name": "fk_wi_variant_composite"
+    }
+  ]
+}

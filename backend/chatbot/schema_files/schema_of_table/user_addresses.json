@@ -1,0 +1,147 @@
+{
+  "table_name": "user_addresses",
+  "database": "ecommerce_db",
+  "description": "Shipping and billing delivery addresses saved by users",
+  "approximate_rows": 6,
+  "total_columns": 13,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "user_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Foreign key to users table"
+    },
+    {
+      "name": "address_type",
+      "data_type": "enum",
+      "column_type": "enum('shipping','billing','both')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "shipping",
+      "extra": "",
+      "comment": "Type of address"
+    },
+    {
+      "name": "recipient_name",
+      "data_type": "varchar",
+      "column_type": "varchar(150)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Full name of recipient for parcel delivery"
+    },
+    {
+      "name": "phone",
+      "data_type": "varchar",
+      "column_type": "varchar(32)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Local contact phone number for courier"
+    },
+    {
+      "name": "street_address",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Primary street address line"
+    },
+    {
+      "name": "apartment_suite",
+      "data_type": "varchar",
+      "column_type": "varchar(100)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Apartment, suite, unit, or floor number"
+    },
+    {
+      "name": "city",
+      "data_type": "varchar",
+      "column_type": "varchar(100)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "City, town, or municipality"
+    },
+    {
+      "name": "state_province",
+      "data_type": "varchar",
+      "column_type": "varchar(100)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "State, province, or administrative region"
+    },
+    {
+      "name": "postal_code",
+      "data_type": "varchar",
+      "column_type": "varchar(20)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Postal or ZIP code"
+    },
+    {
+      "name": "country",
+      "data_type": "varchar",
+      "column_type": "varchar(2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "US",
+      "extra": "",
+      "comment": "ISO 3166-1 alpha-2 country code"
+    },
+    {
+      "name": "is_default",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Whether this is user default address"
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "user_id",
+      "referenced_table": "users",
+      "referenced_column": "id",
+      "constraint_name": "fk_address_user"
+    }
+  ]
+}

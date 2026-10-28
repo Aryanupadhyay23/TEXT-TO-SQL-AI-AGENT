@@ -1,0 +1,77 @@
+{
+  "table_name": "shopping_carts",
+  "database": "ecommerce_db",
+  "description": "Pre-checkout persistent shopping carts",
+  "approximate_rows": 2,
+  "total_columns": 6,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "user_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Registered customer id, null for guest session"
+    },
+    {
+      "name": "session_token",
+      "data_type": "varchar",
+      "column_type": "varchar(128)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Browser anonymous cookie session UUID"
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('active','converted','abandoned')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "active",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    },
+    {
+      "name": "updated_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "user_id",
+      "referenced_table": "users",
+      "referenced_column": "id",
+      "constraint_name": "fk_cart_user"
+    }
+  ]
+}

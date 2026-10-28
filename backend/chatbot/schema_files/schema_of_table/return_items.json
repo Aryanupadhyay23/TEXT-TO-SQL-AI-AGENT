@@ -1,0 +1,105 @@
+{
+  "table_name": "return_items",
+  "database": "ecommerce_db",
+  "description": "Specific line items returned within an RMA request",
+  "approximate_rows": 0,
+  "total_columns": 7,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "return_request_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "order_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Enforces matching order"
+    },
+    {
+      "name": "order_item_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "quantity",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "item_condition",
+      "data_type": "enum",
+      "column_type": "enum('unopened','like_new','damaged','defective')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "like_new",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "restock_approved",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "order_item_id",
+      "referenced_table": "order_items",
+      "referenced_column": "id",
+      "constraint_name": "fk_ri_item_composite"
+    },
+    {
+      "column": "return_request_id",
+      "referenced_table": "return_requests",
+      "referenced_column": "id",
+      "constraint_name": "fk_ri_request_composite"
+    },
+    {
+      "column": "order_id",
+      "referenced_table": "order_items",
+      "referenced_column": "order_id",
+      "constraint_name": "fk_ri_item_composite"
+    },
+    {
+      "column": "order_id",
+      "referenced_table": "return_requests",
+      "referenced_column": "order_id",
+      "constraint_name": "fk_ri_request_composite"
+    }
+  ]
+}

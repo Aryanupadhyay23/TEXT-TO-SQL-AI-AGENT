@@ -1,0 +1,103 @@
+{
+  "table_name": "return_requests",
+  "database": "ecommerce_db",
+  "description": "Customer return and warranty claim cases",
+  "approximate_rows": 0,
+  "total_columns": 8,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "order_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "user_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('requested','authorized','received','inspected','completed','rejected')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "requested",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "return_reason",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "E.g. Defective, Wrong Size, Did not match description"
+    },
+    {
+      "name": "requested_action",
+      "data_type": "enum",
+      "column_type": "enum('refund','exchange','store_credit')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "refund",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    },
+    {
+      "name": "updated_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "order_id",
+      "referenced_table": "orders",
+      "referenced_column": "id",
+      "constraint_name": "fk_rma_order_user"
+    },
+    {
+      "column": "user_id",
+      "referenced_table": "orders",
+      "referenced_column": "user_id",
+      "constraint_name": "fk_rma_order_user"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "table_name": "refunds",
+  "database": "ecommerce_db",
+  "description": "Monetary refund settlements processed back to shoppers",
+  "approximate_rows": 0,
+  "total_columns": 8,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "order_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "payment_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "reason",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Customer return, out of stock, or dispute compensation"
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('requested','approved','processed','declined')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "requested",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "processed_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "order_id",
+      "referenced_table": "orders",
+      "referenced_column": "id",
+      "constraint_name": "fk_ref_order"
+    },
+    {
+      "column": "payment_id",
+      "referenced_table": "payments",
+      "referenced_column": "id",
+      "constraint_name": "fk_ref_payment_order"
+    },
+    {
+      "column": "order_id",
+      "referenced_table": "payments",
+      "referenced_column": "order_id",
+      "constraint_name": "fk_ref_payment_order"
+    }
+  ]
+}

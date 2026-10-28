@@ -1,0 +1,31 @@
+{
+  "domain": "carts_and_wishlists",
+  "description": "Golden SQL pairs for shopping baskets, abandoned carts, wishlist saves, and customer intent.",
+  "sql_pairs": [
+    {
+      "question": "List items currently in active shopping carts with user email.",
+      "sql": "SELECT u.email, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, p.name AS product_name, pv.title AS variant_title, ci.quantity, ci.unit_price FROM shopping_carts sc JOIN users u ON sc.user_id = u.id JOIN cart_items ci ON sc.id = ci.cart_id JOIN product_variants pv ON ci.variant_id = pv.id JOIN products p ON pv.product_id = p.id WHERE sc.status = 'active' ORDER BY sc.id LIMIT 25;",
+      "tables": "shopping_carts, users, cart_items, product_variants, products"
+    },
+    {
+      "question": "Find the most popular products saved on customer wishlists.",
+      "sql": "SELECT p.id, p.name AS product_name, b.name AS brand_name, COUNT(wli.id) AS wishlist_saves FROM wishlist_items wli JOIN products p ON wli.product_id = p.id JOIN brands b ON p.brand_id = b.id GROUP BY p.id, p.name, b.name ORDER BY wishlist_saves DESC LIMIT 10;",
+      "tables": "wishlist_items, products, brands"
+    },
+    {
+      "question": "What is the total potential monetary value of merchandise in all active carts?",
+      "sql": "SELECT COUNT(DISTINCT sc.id) AS active_cart_count, SUM(ci.quantity) AS total_items_in_carts, SUM(ci.quantity * ci.unit_price) AS total_cart_value FROM shopping_carts sc JOIN cart_items ci ON sc.id = ci.cart_id WHERE sc.status = 'active';",
+      "tables": "shopping_carts, cart_items"
+    },
+    {
+      "question": "Which users have public wishlists with saved items?",
+      "sql": "SELECT w.id, u.email, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, w.title, COUNT(wli.id) AS item_count FROM wishlists w JOIN users u ON w.user_id = u.id JOIN wishlist_items wli ON w.id = wli.wishlist_id WHERE w.is_public = 1 GROUP BY w.id, u.email, u.first_name, u.last_name, w.title ORDER BY item_count DESC LIMIT 10;",
+      "tables": "wishlists, users, wishlist_items"
+    },
+    {
+      "question": "Show users who have active cart items totaling more than $200.",
+      "sql": "SELECT u.email, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, SUM(ci.quantity * ci.unit_price) AS cart_total FROM shopping_carts sc JOIN users u ON sc.user_id = u.id JOIN cart_items ci ON sc.id = ci.cart_id WHERE sc.status = 'active' GROUP BY u.id, u.email, u.first_name, u.last_name HAVING cart_total > 200.00 ORDER BY cart_total DESC;",
+      "tables": "shopping_carts, users, cart_items"
+    }
+  ]
+}

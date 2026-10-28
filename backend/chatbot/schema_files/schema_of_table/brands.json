@@ -1,0 +1,80 @@
+{
+  "table_name": "brands",
+  "database": "ecommerce_db",
+  "description": "Product brands and manufacturers",
+  "approximate_rows": 4,
+  "total_columns": 7,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "name",
+      "data_type": "varchar",
+      "column_type": "varchar(120)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Brand manufacturer or vendor name"
+    },
+    {
+      "name": "slug",
+      "data_type": "varchar",
+      "column_type": "varchar(150)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "URL-friendly slug"
+    },
+    {
+      "name": "logo_url",
+      "data_type": "varchar",
+      "column_type": "varchar(500)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Asset URL for brand badge"
+    },
+    {
+      "name": "website_url",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "is_active",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": []
+}

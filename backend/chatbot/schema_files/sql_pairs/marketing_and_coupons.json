@@ -1,0 +1,36 @@
+{
+  "domain": "marketing_and_coupons",
+  "description": "Golden SQL pairs for promotional campaigns, coupon redemptions, discount limits, and marketing performance.",
+  "sql_pairs": [
+    {
+      "question": "Show all orders that used a discount coupon and the discount amount saved.",
+      "sql": "SELECT o.id, o.order_number, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, c.code AS coupon_code, c.discount_type, cr.amount_discounted, o.total_amount, o.placed_at FROM orders o JOIN coupon_redemptions cr ON o.id = cr.order_id JOIN coupons c ON cr.coupon_id = c.id JOIN users u ON o.user_id = u.id ORDER BY cr.amount_discounted DESC;",
+      "tables": "orders, coupon_redemptions, coupons, users"
+    },
+    {
+      "question": "Which coupons have generated the highest total discount savings for shoppers?",
+      "sql": "SELECT c.id, c.code, c.discount_type, c.times_used, SUM(cr.amount_discounted) AS total_dollars_discounted FROM coupons c JOIN coupon_redemptions cr ON c.id = cr.coupon_id GROUP BY c.id, c.code, c.discount_type, c.times_used ORDER BY total_dollars_discounted DESC;",
+      "tables": "coupons, coupon_redemptions"
+    },
+    {
+      "question": "List all active coupons with their discount values and minimum order requirements.",
+      "sql": "SELECT code, discount_type, discount_value, minimum_order_amount, max_discount_amount, usage_limit_per_user FROM coupons WHERE is_active = 1 ORDER BY discount_value DESC LIMIT 15;",
+      "tables": "coupons"
+    },
+    {
+      "question": "Find orders where coupon discounts reduced the order total by more than $30.",
+      "sql": "SELECT o.id, o.order_number, o.subtotal_amount, o.discount_amount, o.total_amount, c.code AS coupon_code FROM orders o JOIN coupon_redemptions cr ON o.id = cr.order_id JOIN coupons c ON cr.coupon_id = c.id WHERE o.discount_amount > 30.00 ORDER BY o.discount_amount DESC;",
+      "tables": "orders, coupon_redemptions, coupons"
+    },
+    {
+      "question": "Compare total usage count and savings between percentage and fixed amount coupons.",
+      "sql": "SELECT c.discount_type, COUNT(cr.id) AS redemptions_count, SUM(cr.amount_discounted) AS total_discount_given FROM coupons c JOIN coupon_redemptions cr ON c.id = cr.coupon_id GROUP BY c.discount_type ORDER BY total_discount_given DESC;",
+      "tables": "coupons, coupon_redemptions"
+    },
+    {
+      "question": "Which customers have redeemed the highest number of coupons?",
+      "sql": "SELECT u.id, u.email, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, COUNT(cr.id) AS total_coupons_redeemed, SUM(cr.amount_discounted) AS total_saved FROM coupon_redemptions cr JOIN users u ON cr.user_id = u.id GROUP BY u.id, u.email, u.first_name, u.last_name ORDER BY total_coupons_redeemed DESC LIMIT 10;",
+      "tables": "coupon_redemptions, users"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "table_name": "inventory_items",
+  "database": "ecommerce_db",
+  "description": "Real-time stock ledger per warehouse and SKU",
+  "approximate_rows": 8,
+  "total_columns": 8,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "warehouse_id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "variant_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "quantity_on_hand",
+      "data_type": "int",
+      "column_type": "int",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Physical count in storage bins"
+    },
+    {
+      "name": "quantity_reserved",
+      "data_type": "int",
+      "column_type": "int",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Allocated to open orders awaiting pick/pack"
+    },
+    {
+      "name": "safety_threshold",
+      "data_type": "int",
+      "column_type": "int",
+      "primary_key": false,
+      "nullable": false,
+      "default": "10",
+      "extra": "",
+      "comment": "Minimum count triggering replenishment alert"
+    },
+    {
+      "name": "available_quantity",
+      "data_type": "int",
+      "column_type": "int",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "STORED GENERATED",
+      "comment": "Effective stock sellable right now"
+    },
+    {
+      "name": "updated_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "variant_id",
+      "referenced_table": "product_variants",
+      "referenced_column": "id",
+      "constraint_name": "fk_inv_variant"
+    },
+    {
+      "column": "warehouse_id",
+      "referenced_table": "warehouses",
+      "referenced_column": "id",
+      "constraint_name": "fk_inv_warehouse"
+    }
+  ]
+}

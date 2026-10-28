@@ -1,0 +1,41 @@
+{
+  "domain": "inventory_and_logistics",
+  "description": "Golden SQL pairs for warehouses, stock levels, safety thresholds, movements, shipments, and tracking.",
+  "sql_pairs": [
+    {
+      "question": "Which product variants currently have low inventory stock below their safety threshold?",
+      "sql": "SELECT pv.id AS variant_id, p.name AS product_name, pv.title AS variant_title, pv.sku, w.name AS warehouse_name, inv.quantity_on_hand, inv.safety_threshold FROM inventory_items inv JOIN product_variants pv ON inv.variant_id = pv.id JOIN products p ON pv.product_id = p.id JOIN warehouses w ON inv.warehouse_id = w.id WHERE inv.quantity_on_hand <= inv.safety_threshold ORDER BY inv.quantity_on_hand ASC;",
+      "tables": "inventory_items, product_variants, products, warehouses"
+    },
+    {
+      "question": "Show all shipments currently in transit along with carrier and tracking number.",
+      "sql": "SELECT sh.id, sh.order_id, sh.carrier, sh.tracking_number, sh.status, sh.estimated_delivery, sh.shipped_at, o.order_number FROM shipments sh JOIN orders o ON sh.order_id = o.id WHERE sh.status = 'in_transit' ORDER BY sh.shipped_at DESC;",
+      "tables": "shipments, orders"
+    },
+    {
+      "question": "What is the total quantity of inventory units on hand across each warehouse?",
+      "sql": "SELECT w.id, w.code, w.name, w.city, w.state_province, SUM(inv.quantity_on_hand) AS total_units_on_hand, SUM(inv.quantity_reserved) AS total_reserved_units FROM warehouses w JOIN inventory_items inv ON w.id = inv.warehouse_id GROUP BY w.id, w.code, w.name, w.city, w.state_province ORDER BY total_units_on_hand DESC LIMIT 10;",
+      "tables": "warehouses, inventory_items"
+    },
+    {
+      "question": "List the recent inbound purchase stock movements and their purchase order references.",
+      "sql": "SELECT sm.id, sm.movement_type, sm.quantity_changed, sm.reference_id, sm.notes, sm.created_at, inv.warehouse_id FROM stock_movements sm JOIN inventory_items inv ON sm.inventory_item_id = inv.id WHERE sm.movement_type = 'inbound_purchase' ORDER BY sm.created_at DESC LIMIT 10;",
+      "tables": "stock_movements, inventory_items"
+    },
+    {
+      "question": "How many shipments were handled by each carrier (FedEx, UPS, DHL)?",
+      "sql": "SELECT carrier, COUNT(*) AS shipment_count, SUM(CASE WHEN status = 'delivered' THEN 1 ELSE 0 END) AS delivered_count, SUM(CASE WHEN status = 'in_transit' THEN 1 ELSE 0 END) AS in_transit_count FROM shipments GROUP BY carrier ORDER BY shipment_count DESC;",
+      "tables": "shipments"
+    },
+    {
+      "question": "Find warehouses located in Washington or California.",
+      "sql": "SELECT id, code, name, city, state_province FROM warehouses WHERE state_province IN ('WA', 'CA') ORDER BY state_province, city;",
+      "tables": "warehouses"
+    },
+    {
+      "question": "What is the total quantity of reserved inventory units across all products?",
+      "sql": "SELECT SUM(quantity_reserved) AS total_reserved_inventory, SUM(quantity_on_hand) AS total_on_hand_inventory FROM inventory_items;",
+      "tables": "inventory_items"
+    }
+  ]
+}

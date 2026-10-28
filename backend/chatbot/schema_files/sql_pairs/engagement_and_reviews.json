@@ -1,0 +1,36 @@
+{
+  "domain": "engagement_and_reviews",
+  "description": "Golden SQL pairs for ratings, customer reviews, verified purchase status, and community helpfulness votes.",
+  "sql_pairs": [
+    {
+      "question": "List the top 5 highest rated products with verified customer reviews.",
+      "sql": "SELECT p.id, p.name, b.name AS brand, COUNT(pr.id) AS review_count, ROUND(AVG(pr.rating), 2) AS avg_rating FROM products p JOIN brands b ON p.brand_id = b.id JOIN product_reviews pr ON p.id = pr.product_id WHERE pr.status = 'approved' AND pr.is_verified_purchase = 1 GROUP BY p.id, p.name, b.name HAVING COUNT(pr.id) >= 2 ORDER BY avg_rating DESC, review_count DESC LIMIT 5;",
+      "tables": "products, brands, product_reviews"
+    },
+    {
+      "question": "Show the distribution of product review ratings across 1 to 5 stars.",
+      "sql": "SELECT rating AS star_rating, COUNT(*) AS total_reviews, ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM product_reviews WHERE status = 'approved'), 1) AS percentage FROM product_reviews WHERE status = 'approved' GROUP BY rating ORDER BY star_rating DESC;",
+      "tables": "product_reviews"
+    },
+    {
+      "question": "Which reviews received the highest number of helpful upvotes from the community?",
+      "sql": "SELECT pr.id, p.name AS product_name, CONCAT(u.first_name, ' ', u.last_name) AS reviewer, pr.rating, pr.title, pr.helpful_votes FROM product_reviews pr JOIN products p ON pr.product_id = p.id JOIN users u ON pr.user_id = u.id WHERE pr.status = 'approved' ORDER BY pr.helpful_votes DESC LIMIT 10;",
+      "tables": "product_reviews, products, users"
+    },
+    {
+      "question": "Find all verified reviews for products with 5-star rating.",
+      "sql": "SELECT pr.id, p.name AS product_name, pr.title, pr.review_text, pr.helpful_votes, pr.created_at FROM product_reviews pr JOIN products p ON pr.product_id = p.id WHERE pr.rating = 5 AND pr.is_verified_purchase = 1 AND pr.status = 'approved' ORDER BY pr.helpful_votes DESC LIMIT 10;",
+      "tables": "product_reviews, products"
+    },
+    {
+      "question": "What is the average rating given by reviewers for each brand?",
+      "sql": "SELECT b.name AS brand_name, COUNT(pr.id) AS total_reviews, ROUND(AVG(pr.rating), 2) AS avg_brand_rating FROM brands b JOIN products p ON b.id = p.brand_id JOIN product_reviews pr ON p.id = pr.product_id WHERE pr.status = 'approved' GROUP BY b.name HAVING COUNT(pr.id) >= 2 ORDER BY avg_brand_rating DESC LIMIT 10;",
+      "tables": "brands, products, product_reviews"
+    },
+    {
+      "question": "How many total helpful votes were submitted across all product reviews?",
+      "sql": "SELECT COUNT(*) AS total_helpful_votes_cast, COUNT(DISTINCT user_id) AS distinct_voting_users FROM review_helpful_votes WHERE is_helpful = 1;",
+      "tables": "review_helpful_votes"
+    }
+  ]
+}

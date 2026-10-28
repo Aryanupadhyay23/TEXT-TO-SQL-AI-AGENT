@@ -1,0 +1,110 @@
+{
+  "table_name": "users",
+  "database": "ecommerce_db",
+  "description": "Master identity table for shoppers, sellers, and administrators",
+  "approximate_rows": 7,
+  "total_columns": 10,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "email",
+      "data_type": "varchar",
+      "column_type": "varchar(191)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Unique login and communication email"
+    },
+    {
+      "name": "password_hash",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Bcrypt encrypted password hash"
+    },
+    {
+      "name": "first_name",
+      "data_type": "varchar",
+      "column_type": "varchar(100)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Customer or staff first name"
+    },
+    {
+      "name": "last_name",
+      "data_type": "varchar",
+      "column_type": "varchar(100)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Customer or staff last name"
+    },
+    {
+      "name": "phone",
+      "data_type": "varchar",
+      "column_type": "varchar(32)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "E.164 formatted contact number"
+    },
+    {
+      "name": "role",
+      "data_type": "enum",
+      "column_type": "enum('customer','admin','vendor','support')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "customer",
+      "extra": "",
+      "comment": "System access role"
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('active','suspended','pending_verification')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "active",
+      "extra": "",
+      "comment": "Account status"
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    },
+    {
+      "name": "updated_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": []
+}

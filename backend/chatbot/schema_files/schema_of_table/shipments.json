@@ -1,0 +1,123 @@
+{
+  "table_name": "shipments",
+  "database": "ecommerce_db",
+  "description": "Fulfillment dispatches and courier tracking numbers",
+  "approximate_rows": 4,
+  "total_columns": 10,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "order_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "warehouse_id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "carrier",
+      "data_type": "varchar",
+      "column_type": "varchar(60)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "E.g. FedEx, UPS, DHL, USPS"
+    },
+    {
+      "name": "tracking_number",
+      "data_type": "varchar",
+      "column_type": "varchar(120)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('label_created','in_transit','out_for_delivery','delivered','failed','returned')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "label_created",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "estimated_delivery",
+      "data_type": "date",
+      "column_type": "date",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "actual_delivery",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "shipped_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "order_id",
+      "referenced_table": "orders",
+      "referenced_column": "id",
+      "constraint_name": "fk_ship_order"
+    },
+    {
+      "column": "warehouse_id",
+      "referenced_table": "warehouses",
+      "referenced_column": "id",
+      "constraint_name": "fk_ship_wh"
+    }
+  ]
+}

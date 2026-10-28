@@ -1,0 +1,67 @@
+{
+  "business_rules": [
+    {
+      "title": "Order Revenue and Financial Reconciliation",
+      "domain": "orders",
+      "content": "An order's total_amount is strictly calculated as: subtotal_amount - discount_amount + shipping_amount + tax_amount. When calculating gross sales revenue across orders, sum orders.total_amount for orders where status IN ('delivered', 'shipped') and status != 'cancelled'. For line-item analytics, order_items.total_price equals (unit_price * quantity) - discount_amount.",
+      "associated_tables": [
+        "orders",
+        "order_items",
+        "payments"
+      ]
+    },
+    {
+      "title": "Membership Tiers and Loyalty Rewards",
+      "domain": "customers",
+      "content": "Customers are categorized into 4 membership tiers: Standard (0-499 pts), Silver (500-1199 pts), Gold (1200-3499 pts), and Platinum (3500+ pts). Lifetime spend and order counts are tracked in customer_profiles and updated upon successful order completion.",
+      "associated_tables": [
+        "users",
+        "customer_profiles",
+        "user_addresses"
+      ]
+    },
+    {
+      "title": "Inventory Availability and Stock Movement Audit",
+      "domain": "inventory",
+      "content": "Inventory items track quantity_on_hand and quantity_reserved across multiple regional warehouses. The virtual column is_available indicates whether (quantity_on_hand - quantity_reserved) > 0. Low stock alerts are triggered when quantity_on_hand <= safety_threshold. Every adjustment is recorded in stock_movements.",
+      "associated_tables": [
+        "inventory_items",
+        "stock_movements",
+        "warehouses",
+        "product_variants"
+      ]
+    },
+    {
+      "title": "Coupon Types and Usage Limits",
+      "domain": "promotions",
+      "content": "Coupons support three discount types: 'percentage', 'fixed_amount', and 'free_shipping'. Coupons enforce minimum_order_amount, optional max_discount_amount caps, and usage_limit_per_user. Total redemptions are audited in coupon_redemptions and reflected in coupons.times_used via triggers.",
+      "associated_tables": [
+        "coupons",
+        "coupon_redemptions",
+        "orders"
+      ]
+    },
+    {
+      "title": "Verified Reviews and Star Ratings",
+      "domain": "engagement",
+      "content": "Product reviews have rating values from 1 to 5. Verified reviews (is_verified_purchase = 1) are linked via foreign keys to the customer's actual order and order_item. Helpful votes are recorded in review_helpful_votes and aggregated into helpful_votes.",
+      "associated_tables": [
+        "product_reviews",
+        "review_helpful_votes",
+        "products"
+      ]
+    },
+    {
+      "title": "Returns RMA and Refund Settlements",
+      "domain": "returns",
+      "content": "Return requests (RMAs) are created for delivered orders with reasons such as defective, sizing, or changed preference. Upon inspection and restocking approval in return_items, refunds are processed against the original payment_id and linked to the order.",
+      "associated_tables": [
+        "return_requests",
+        "return_items",
+        "refunds",
+        "payments",
+        "orders"
+      ]
+    }
+  ]
+}

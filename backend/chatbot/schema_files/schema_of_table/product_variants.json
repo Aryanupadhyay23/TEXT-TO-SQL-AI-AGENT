@@ -1,0 +1,147 @@
+{
+  "table_name": "product_variants",
+  "database": "ecommerce_db",
+  "description": "Stock variants by color, size, and material combinations",
+  "approximate_rows": 8,
+  "total_columns": 13,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "product_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Parent product reference"
+    },
+    {
+      "name": "sku",
+      "data_type": "varchar",
+      "column_type": "varchar(64)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Unique stock keeping unit barcode/identifier"
+    },
+    {
+      "name": "title",
+      "data_type": "varchar",
+      "column_type": "varchar(150)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Variant descriptor (e.g. Midnight Blue / XL / 128GB)"
+    },
+    {
+      "name": "option_color",
+      "data_type": "varchar",
+      "column_type": "varchar(60)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Color attribute value"
+    },
+    {
+      "name": "option_size",
+      "data_type": "varchar",
+      "column_type": "varchar(40)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Size attribute value"
+    },
+    {
+      "name": "option_material",
+      "data_type": "varchar",
+      "column_type": "varchar(60)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Material attribute value"
+    },
+    {
+      "name": "price",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Actual retail sell price for this exact variant"
+    },
+    {
+      "name": "compare_at_price",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Original MSRP or strike-through sale price"
+    },
+    {
+      "name": "weight_grams",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Product mass in grams for shipping cost calculation"
+    },
+    {
+      "name": "barcode_upc",
+      "data_type": "varchar",
+      "column_type": "varchar(32)",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Standard UPC/EAN retail barcode"
+    },
+    {
+      "name": "is_active",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "product_id",
+      "referenced_table": "products",
+      "referenced_column": "id",
+      "constraint_name": "fk_variant_product"
+    }
+  ]
+}

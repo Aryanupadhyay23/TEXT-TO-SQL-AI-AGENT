@@ -1,0 +1,46 @@
+{
+  "domain": "customers_and_profiles",
+  "description": "Golden SQL pairs for shoppers, customer profiles, membership tiers, loyalty points, and geographic distribution.",
+  "sql_pairs": [
+    {
+      "question": "List all customers who have placed orders with a total lifetime spend greater than $500.",
+      "sql": "SELECT u.id, u.email, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, cp.membership_tier, cp.lifetime_spend, cp.lifetime_orders_count FROM users u JOIN customer_profiles cp ON u.id = cp.user_id WHERE cp.lifetime_spend > 500.00 ORDER BY cp.lifetime_spend DESC;",
+      "tables": "users, customer_profiles"
+    },
+    {
+      "question": "How many customer accounts are in each membership tier?",
+      "sql": "SELECT membership_tier, COUNT(*) AS customer_count, ROUND(AVG(lifetime_spend), 2) AS avg_lifetime_spend, ROUND(AVG(loyalty_points), 0) AS avg_loyalty_points FROM customer_profiles GROUP BY membership_tier ORDER BY customer_count DESC;",
+      "tables": "customer_profiles"
+    },
+    {
+      "question": "Which customers have the highest loyalty rewards points balance?",
+      "sql": "SELECT u.id, u.email, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, cp.membership_tier, cp.loyalty_points FROM users u JOIN customer_profiles cp ON u.id = cp.user_id ORDER BY cp.loyalty_points DESC LIMIT 10;",
+      "tables": "users, customer_profiles"
+    },
+    {
+      "question": "Show the number of customers registered by state.",
+      "sql": "SELECT ua.state_province AS state, COUNT(DISTINCT ua.user_id) AS customer_count FROM user_addresses ua WHERE ua.is_default = 1 GROUP BY ua.state_province ORDER BY customer_count DESC LIMIT 15;",
+      "tables": "user_addresses"
+    },
+    {
+      "question": "List all Platinum VIP customers with their email and phone number.",
+      "sql": "SELECT u.id, u.email, u.phone, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, cp.lifetime_spend FROM users u JOIN customer_profiles cp ON u.id = cp.user_id WHERE cp.membership_tier = 'platinum' ORDER BY cp.lifetime_spend DESC;",
+      "tables": "users, customer_profiles"
+    },
+    {
+      "question": "How many new user accounts were registered in each month of 2025?",
+      "sql": "SELECT DATE_FORMAT(created_at, '%Y-%m') AS registration_month, COUNT(*) AS new_users_count FROM users GROUP BY DATE_FORMAT(created_at, '%Y-%m') ORDER BY registration_month ASC;",
+      "tables": "users"
+    },
+    {
+      "question": "Find customers located in California who have completed at least one order.",
+      "sql": "SELECT DISTINCT u.id, u.email, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, ua.city, cp.lifetime_orders_count FROM users u JOIN user_addresses ua ON u.id = ua.user_id JOIN customer_profiles cp ON u.id = cp.user_id WHERE ua.state_province = 'CA' AND cp.lifetime_orders_count > 0 LIMIT 10;",
+      "tables": "users, user_addresses, customer_profiles"
+    },
+    {
+      "question": "What is the average lifetime spend of Gold tier vs Silver tier members?",
+      "sql": "SELECT membership_tier, ROUND(AVG(lifetime_spend), 2) AS avg_spend, COUNT(*) AS member_count FROM customer_profiles WHERE membership_tier IN ('gold', 'silver') GROUP BY membership_tier;",
+      "tables": "customer_profiles"
+    }
+  ]
+}

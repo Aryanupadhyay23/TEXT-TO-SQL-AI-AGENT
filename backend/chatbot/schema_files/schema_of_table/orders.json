@@ -1,0 +1,201 @@
+{
+  "table_name": "orders",
+  "database": "ecommerce_db",
+  "description": "Master commercial order records",
+  "approximate_rows": 5,
+  "total_columns": 16,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "order_number",
+      "data_type": "varchar",
+      "column_type": "varchar(64)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Public reference (e.g. ORD-2025-00101)"
+    },
+    {
+      "name": "user_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Customer placing order"
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('pending','confirmed','processing','shipped','delivered','cancelled','refunded')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "pending",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "currency",
+      "data_type": "varchar",
+      "column_type": "varchar(3)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "USD",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "subtotal_amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Sum of item prices before discount/tax/ship"
+    },
+    {
+      "name": "discount_amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Total promotional discount applied"
+    },
+    {
+      "name": "shipping_amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Delivery freight charged to buyer"
+    },
+    {
+      "name": "tax_amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Sales tax / VAT collected"
+    },
+    {
+      "name": "total_amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Final grand total charged"
+    },
+    {
+      "name": "shipping_address_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "billing_address_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "shipping_method",
+      "data_type": "varchar",
+      "column_type": "varchar(60)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "Standard Ground",
+      "extra": "",
+      "comment": "Carrier tier selected"
+    },
+    {
+      "name": "customer_notes",
+      "data_type": "text",
+      "column_type": "text",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "placed_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    },
+    {
+      "name": "updated_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "billing_address_id",
+      "referenced_table": "user_addresses",
+      "referenced_column": "id",
+      "constraint_name": "fk_ord_bill_addr_user"
+    },
+    {
+      "column": "shipping_address_id",
+      "referenced_table": "user_addresses",
+      "referenced_column": "id",
+      "constraint_name": "fk_ord_ship_addr_user"
+    },
+    {
+      "column": "user_id",
+      "referenced_table": "users",
+      "referenced_column": "id",
+      "constraint_name": "fk_ord_user"
+    },
+    {
+      "column": "user_id",
+      "referenced_table": "user_addresses",
+      "referenced_column": "user_id",
+      "constraint_name": "fk_ord_bill_addr_user"
+    },
+    {
+      "column": "user_id",
+      "referenced_table": "user_addresses",
+      "referenced_column": "user_id",
+      "constraint_name": "fk_ord_ship_addr_user"
+    }
+  ]
+}

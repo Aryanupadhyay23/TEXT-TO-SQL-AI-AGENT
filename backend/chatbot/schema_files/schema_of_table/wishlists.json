@@ -1,0 +1,67 @@
+{
+  "table_name": "wishlists",
+  "database": "ecommerce_db",
+  "description": "Customer wishlists parent containers",
+  "approximate_rows": 2,
+  "total_columns": 5,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "user_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "title",
+      "data_type": "varchar",
+      "column_type": "varchar(120)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "My Wishlist",
+      "extra": "",
+      "comment": "Custom name (e.g. Holiday Tech, Saved for Later)"
+    },
+    {
+      "name": "is_public",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Shareable wishlist toggle"
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "user_id",
+      "referenced_table": "users",
+      "referenced_column": "id",
+      "constraint_name": "fk_wish_user"
+    }
+  ]
+}

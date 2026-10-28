@@ -1,0 +1,36 @@
+{
+  "domain": "returns_and_refunds",
+  "description": "Golden SQL pairs for return merchandise authorizations (RMA), restock audits, and processed refund transactions.",
+  "sql_pairs": [
+    {
+      "question": "What is the total refund amount processed across all returned items?",
+      "sql": "SELECT COUNT(*) AS total_refunds_processed, SUM(amount) AS total_refunded_amount, AVG(amount) AS avg_refund_amount FROM refunds WHERE status = 'processed';",
+      "tables": "refunds"
+    },
+    {
+      "question": "What are the most common return reasons stated by customers in return requests?",
+      "sql": "SELECT return_reason, COUNT(*) AS request_count FROM return_requests GROUP BY return_reason ORDER BY request_count DESC;",
+      "tables": "return_requests"
+    },
+    {
+      "question": "Show all completed return requests with customer details, order number, and refund amount.",
+      "sql": "SELECT rr.id AS rma_id, o.order_number, CONCAT(u.first_name, ' ', u.last_name) AS customer_name, rr.return_reason, rf.amount AS refunded_amount, rf.processed_at FROM return_requests rr JOIN orders o ON rr.order_id = o.id JOIN users u ON rr.user_id = u.id JOIN refunds rf ON o.id = rf.order_id WHERE rr.status = 'completed' ORDER BY rf.processed_at DESC LIMIT 10;",
+      "tables": "return_requests, orders, users, refunds"
+    },
+    {
+      "question": "How many returned items had restock approved versus damaged or defective condition?",
+      "sql": "SELECT item_condition, restock_approved, COUNT(*) AS item_count, SUM(quantity) AS total_units_returned FROM return_items GROUP BY item_condition, restock_approved ORDER BY item_count DESC;",
+      "tables": "return_items"
+    },
+    {
+      "question": "What is the total refund amount processed per payment method?",
+      "sql": "SELECT pm.payment_method, COUNT(rf.id) AS refund_count, SUM(rf.amount) AS total_refunded FROM refunds rf JOIN payments pm ON rf.payment_id = pm.id WHERE rf.status = 'processed' GROUP BY pm.payment_method ORDER BY total_refunded DESC;",
+      "tables": "refunds, payments"
+    },
+    {
+      "question": "List return requests where customer requested replacement or exchange instead of refund.",
+      "sql": "SELECT id, order_id, user_id, requested_action, return_reason, created_at FROM return_requests WHERE requested_action IN ('exchange', 'store_credit') ORDER BY created_at DESC LIMIT 10;",
+      "tables": "return_requests"
+    }
+  ]
+}

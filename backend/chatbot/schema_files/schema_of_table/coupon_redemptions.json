@@ -1,0 +1,89 @@
+{
+  "table_name": "coupon_redemptions",
+  "database": "ecommerce_db",
+  "description": "Redemption records tracking coupon utilization",
+  "approximate_rows": 4,
+  "total_columns": 6,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "coupon_id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "user_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "order_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "amount_discounted",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "redeemed_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "coupon_id",
+      "referenced_table": "coupons",
+      "referenced_column": "id",
+      "constraint_name": "fk_cr_coupon"
+    },
+    {
+      "column": "order_id",
+      "referenced_table": "orders",
+      "referenced_column": "id",
+      "constraint_name": "fk_cr_order_user"
+    },
+    {
+      "column": "user_id",
+      "referenced_table": "orders",
+      "referenced_column": "user_id",
+      "constraint_name": "fk_cr_order_user"
+    }
+  ]
+}

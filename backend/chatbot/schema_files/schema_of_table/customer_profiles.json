@@ -1,0 +1,107 @@
+{
+  "table_name": "customer_profiles",
+  "database": "ecommerce_db",
+  "description": "Enriched marketing, loyalty tier, and lifetime analytics metrics",
+  "approximate_rows": 6,
+  "total_columns": 9,
+  "columns": [
+    {
+      "name": "user_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "1:1 reference to users table"
+    },
+    {
+      "name": "loyalty_points",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Available rewards points for redemption"
+    },
+    {
+      "name": "membership_tier",
+      "data_type": "enum",
+      "column_type": "enum('standard','silver','gold','platinum')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "standard",
+      "extra": "",
+      "comment": "VIP status"
+    },
+    {
+      "name": "lifetime_spend",
+      "data_type": "decimal",
+      "column_type": "decimal(12,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0.00",
+      "extra": "",
+      "comment": "Cumulative monetary spending in store currency"
+    },
+    {
+      "name": "lifetime_orders_count",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Total count of completed orders"
+    },
+    {
+      "name": "birth_date",
+      "data_type": "date",
+      "column_type": "date",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Customer birthday for promotional rewards"
+    },
+    {
+      "name": "gender",
+      "data_type": "enum",
+      "column_type": "enum('male','female','non_binary','prefer_not_to_say')",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "notes",
+      "data_type": "text",
+      "column_type": "text",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Internal customer service notes or preferences"
+    },
+    {
+      "name": "updated_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "user_id",
+      "referenced_table": "users",
+      "referenced_column": "id",
+      "constraint_name": "fk_profile_user"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "table_name": "categories",
+  "database": "ecommerce_db",
+  "description": "Hierarchical merchandise taxonomy tree",
+  "approximate_rows": 6,
+  "total_columns": 8,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "parent_id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Self-reference for nested sub-categories"
+    },
+    {
+      "name": "name",
+      "data_type": "varchar",
+      "column_type": "varchar(120)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Category title (e.g. Footwear, Smartphones)"
+    },
+    {
+      "name": "slug",
+      "data_type": "varchar",
+      "column_type": "varchar(150)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "URL-safe identifier"
+    },
+    {
+      "name": "description",
+      "data_type": "text",
+      "column_type": "text",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Category overview and SEO copy"
+    },
+    {
+      "name": "display_order",
+      "data_type": "smallint",
+      "column_type": "smallint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": "Sorting order on storefront nav"
+    },
+    {
+      "name": "is_active",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": "Visibility flag"
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "parent_id",
+      "referenced_table": "categories",
+      "referenced_column": "id",
+      "constraint_name": "fk_cat_parent"
+    }
+  ]
+}

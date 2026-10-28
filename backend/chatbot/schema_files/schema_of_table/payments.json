@@ -1,0 +1,107 @@
+{
+  "table_name": "payments",
+  "database": "ecommerce_db",
+  "description": "Financial transactions charged for orders",
+  "approximate_rows": 6,
+  "total_columns": 9,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "order_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "payment_method",
+      "data_type": "enum",
+      "column_type": "enum('credit_card','paypal','stripe','apple_pay','google_pay','bank_transfer','cod')",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "transaction_reference",
+      "data_type": "varchar",
+      "column_type": "varchar(128)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Payment gateway charge token or transaction ID"
+    },
+    {
+      "name": "amount",
+      "data_type": "decimal",
+      "column_type": "decimal(10,2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "currency",
+      "data_type": "varchar",
+      "column_type": "varchar(3)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "USD",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('pending','authorized','captured','failed','refunded')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "pending",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "gateway_response",
+      "data_type": "json",
+      "column_type": "json",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Raw metadata from payment gateway provider"
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "order_id",
+      "referenced_table": "orders",
+      "referenced_column": "id",
+      "constraint_name": "fk_pay_order"
+    }
+  ]
+}

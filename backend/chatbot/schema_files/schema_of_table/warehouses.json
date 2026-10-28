@@ -1,0 +1,110 @@
+{
+  "table_name": "warehouses",
+  "database": "ecommerce_db",
+  "description": "Fulfillment distribution centers and storage depots",
+  "approximate_rows": 3,
+  "total_columns": 10,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "code",
+      "data_type": "varchar",
+      "column_type": "varchar(32)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Facility identifier (e.g. WH-EAST-01)"
+    },
+    {
+      "name": "name",
+      "data_type": "varchar",
+      "column_type": "varchar(120)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Warehouse name"
+    },
+    {
+      "name": "street_address",
+      "data_type": "varchar",
+      "column_type": "varchar(255)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "city",
+      "data_type": "varchar",
+      "column_type": "varchar(100)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "state_province",
+      "data_type": "varchar",
+      "column_type": "varchar(100)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "postal_code",
+      "data_type": "varchar",
+      "column_type": "varchar(20)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "country",
+      "data_type": "varchar",
+      "column_type": "varchar(2)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "US",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "is_active",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "1",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": []
+}

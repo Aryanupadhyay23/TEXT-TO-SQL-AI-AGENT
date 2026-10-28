@@ -1,0 +1,375 @@
+{
+  "entities": [
+    {
+      "category": "user_role",
+      "literal_value": "customer",
+      "table": "users",
+      "column": "role",
+      "aliases": [
+        "customer",
+        "shopper",
+        "client",
+        "buyer",
+        "end user"
+      ],
+      "sql_condition": "users.role = 'customer'"
+    },
+    {
+      "category": "user_role",
+      "literal_value": "admin",
+      "table": "users",
+      "column": "role",
+      "aliases": [
+        "admin",
+        "administrator",
+        "staff",
+        "system admin"
+      ],
+      "sql_condition": "users.role = 'admin'"
+    },
+    {
+      "category": "user_status",
+      "literal_value": "active",
+      "table": "users",
+      "column": "status",
+      "aliases": [
+        "active user",
+        "active customer",
+        "verified account",
+        "active account"
+      ],
+      "sql_condition": "users.status = 'active'"
+    },
+    {
+      "category": "user_status",
+      "literal_value": "suspended",
+      "table": "users",
+      "column": "status",
+      "aliases": [
+        "suspended",
+        "banned",
+        "deactivated",
+        "disabled user"
+      ],
+      "sql_condition": "users.status = 'suspended'"
+    },
+    {
+      "category": "membership_tier",
+      "literal_value": "standard",
+      "table": "customer_profiles",
+      "column": "membership_tier",
+      "aliases": [
+        "standard member",
+        "basic tier",
+        "regular customer"
+      ],
+      "sql_condition": "customer_profiles.membership_tier = 'standard'"
+    },
+    {
+      "category": "membership_tier",
+      "literal_value": "silver",
+      "table": "customer_profiles",
+      "column": "membership_tier",
+      "aliases": [
+        "silver",
+        "silver member",
+        "silver tier"
+      ],
+      "sql_condition": "customer_profiles.membership_tier = 'silver'"
+    },
+    {
+      "category": "membership_tier",
+      "literal_value": "gold",
+      "table": "customer_profiles",
+      "column": "membership_tier",
+      "aliases": [
+        "gold",
+        "gold member",
+        "gold tier",
+        "vip gold"
+      ],
+      "sql_condition": "customer_profiles.membership_tier = 'gold'"
+    },
+    {
+      "category": "membership_tier",
+      "literal_value": "platinum",
+      "table": "customer_profiles",
+      "column": "membership_tier",
+      "aliases": [
+        "platinum",
+        "platinum member",
+        "top tier",
+        "vip platinum"
+      ],
+      "sql_condition": "customer_profiles.membership_tier = 'platinum'"
+    },
+    {
+      "category": "order_status",
+      "literal_value": "delivered",
+      "table": "orders",
+      "column": "status",
+      "aliases": [
+        "delivered",
+        "completed",
+        "fulfilled",
+        "received",
+        "delivered orders"
+      ],
+      "sql_condition": "orders.status = 'delivered'"
+    },
+    {
+      "category": "order_status",
+      "literal_value": "shipped",
+      "table": "orders",
+      "column": "status",
+      "aliases": [
+        "shipped",
+        "dispatched",
+        "in transit",
+        "on the way"
+      ],
+      "sql_condition": "orders.status = 'shipped'"
+    },
+    {
+      "category": "order_status",
+      "literal_value": "processing",
+      "table": "orders",
+      "column": "status",
+      "aliases": [
+        "processing",
+        "in fulfillment",
+        "packing",
+        "warehouse processing"
+      ],
+      "sql_condition": "orders.status = 'processing'"
+    },
+    {
+      "category": "order_status",
+      "literal_value": "confirmed",
+      "table": "orders",
+      "column": "status",
+      "aliases": [
+        "confirmed",
+        "order placed",
+        "order received"
+      ],
+      "sql_condition": "orders.status = 'confirmed'"
+    },
+    {
+      "category": "order_status",
+      "literal_value": "cancelled",
+      "table": "orders",
+      "column": "status",
+      "aliases": [
+        "cancelled",
+        "canceled",
+        "voided",
+        "aborted"
+      ],
+      "sql_condition": "orders.status = 'cancelled'"
+    },
+    {
+      "category": "order_status",
+      "literal_value": "refunded",
+      "table": "orders",
+      "column": "status",
+      "aliases": [
+        "refunded",
+        "reimbursed",
+        "returned and refunded"
+      ],
+      "sql_condition": "orders.status = 'refunded'"
+    },
+    {
+      "category": "payment_method",
+      "literal_value": "credit_card",
+      "table": "payments",
+      "column": "payment_method",
+      "aliases": [
+        "credit card",
+        "visa",
+        "mastercard",
+        "amex",
+        "card payment"
+      ],
+      "sql_condition": "payments.payment_method = 'credit_card'"
+    },
+    {
+      "category": "payment_method",
+      "literal_value": "stripe",
+      "table": "payments",
+      "column": "payment_method",
+      "aliases": [
+        "stripe",
+        "stripe checkout"
+      ],
+      "sql_condition": "payments.payment_method = 'stripe'"
+    },
+    {
+      "category": "payment_method",
+      "literal_value": "apple_pay",
+      "table": "payments",
+      "column": "payment_method",
+      "aliases": [
+        "apple pay",
+        "applepay",
+        "apple wallet"
+      ],
+      "sql_condition": "payments.payment_method = 'apple_pay'"
+    },
+    {
+      "category": "payment_method",
+      "literal_value": "paypal",
+      "table": "payments",
+      "column": "payment_method",
+      "aliases": [
+        "paypal",
+        "paypal balance"
+      ],
+      "sql_condition": "payments.payment_method = 'paypal'"
+    },
+    {
+      "category": "payment_status",
+      "literal_value": "captured",
+      "table": "payments",
+      "column": "status",
+      "aliases": [
+        "captured",
+        "paid",
+        "successful payment",
+        "settled"
+      ],
+      "sql_condition": "payments.status = 'captured'"
+    },
+    {
+      "category": "shipment_status",
+      "literal_value": "delivered",
+      "table": "shipments",
+      "column": "status",
+      "aliases": [
+        "parcel delivered",
+        "delivered shipment",
+        "package delivered"
+      ],
+      "sql_condition": "shipments.status = 'delivered'"
+    },
+    {
+      "category": "shipment_status",
+      "literal_value": "in_transit",
+      "table": "shipments",
+      "column": "status",
+      "aliases": [
+        "in transit",
+        "en route",
+        "moving through network"
+      ],
+      "sql_condition": "shipments.status = 'in_transit'"
+    },
+    {
+      "category": "carrier",
+      "literal_value": "FedEx",
+      "table": "shipments",
+      "column": "carrier",
+      "aliases": [
+        "fedex",
+        "federal express"
+      ],
+      "sql_condition": "shipments.carrier = 'FedEx'"
+    },
+    {
+      "category": "carrier",
+      "literal_value": "UPS",
+      "table": "shipments",
+      "column": "carrier",
+      "aliases": [
+        "ups",
+        "united parcel service"
+      ],
+      "sql_condition": "shipments.carrier = 'UPS'"
+    },
+    {
+      "category": "carrier",
+      "literal_value": "DHL",
+      "table": "shipments",
+      "column": "carrier",
+      "aliases": [
+        "dhl",
+        "dhl express"
+      ],
+      "sql_condition": "shipments.carrier = 'DHL'"
+    },
+    {
+      "category": "coupon_type",
+      "literal_value": "percentage",
+      "table": "coupons",
+      "column": "discount_type",
+      "aliases": [
+        "percentage discount",
+        "percent off",
+        "% off"
+      ],
+      "sql_condition": "coupons.discount_type = 'percentage'"
+    },
+    {
+      "category": "coupon_type",
+      "literal_value": "fixed_amount",
+      "table": "coupons",
+      "column": "discount_type",
+      "aliases": [
+        "fixed amount",
+        "dollars off",
+        "$ off",
+        "cash discount"
+      ],
+      "sql_condition": "coupons.discount_type = 'fixed_amount'"
+    },
+    {
+      "category": "coupon_type",
+      "literal_value": "free_shipping",
+      "table": "coupons",
+      "column": "discount_type",
+      "aliases": [
+        "free shipping",
+        "zero shipping fee",
+        "waived delivery fee"
+      ],
+      "sql_condition": "coupons.discount_type = 'free_shipping'"
+    },
+    {
+      "category": "review_verification",
+      "literal_value": "1",
+      "table": "product_reviews",
+      "column": "is_verified_purchase",
+      "aliases": [
+        "verified purchase",
+        "verified buyer",
+        "confirmed buyer review"
+      ],
+      "sql_condition": "product_reviews.is_verified_purchase = 1"
+    },
+    {
+      "category": "rma_status",
+      "literal_value": "completed",
+      "table": "return_requests",
+      "column": "status",
+      "aliases": [
+        "completed return",
+        "resolved return",
+        "approved and refunded return"
+      ],
+      "sql_condition": "return_requests.status = 'completed'"
+    },
+    {
+      "category": "rma_action",
+      "literal_value": "refund",
+      "table": "return_requests",
+      "column": "requested_action",
+      "aliases": [
+        "request refund",
+        "money back",
+        "refund action"
+      ],
+      "sql_condition": "return_requests.requested_action = 'refund'"
+    }
+  ]
+}

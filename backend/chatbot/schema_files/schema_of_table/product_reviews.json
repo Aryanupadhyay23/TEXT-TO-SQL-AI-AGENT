@@ -1,0 +1,173 @@
+{
+  "table_name": "product_reviews",
+  "database": "ecommerce_db",
+  "description": "Shopper reviews, ratings, and customer sentiment",
+  "approximate_rows": 3,
+  "total_columns": 12,
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": true,
+      "nullable": false,
+      "default": null,
+      "extra": "auto_increment",
+      "comment": ""
+    },
+    {
+      "name": "product_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "user_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "order_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Order verifying customer purchase"
+    },
+    {
+      "name": "order_item_id",
+      "data_type": "bigint",
+      "column_type": "bigint unsigned",
+      "primary_key": false,
+      "nullable": true,
+      "default": null,
+      "extra": "",
+      "comment": "Associated order line item verifying purchase"
+    },
+    {
+      "name": "rating",
+      "data_type": "tinyint",
+      "column_type": "tinyint unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Score between 1 and 5 stars"
+    },
+    {
+      "name": "title",
+      "data_type": "varchar",
+      "column_type": "varchar(150)",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Review headline"
+    },
+    {
+      "name": "review_text",
+      "data_type": "text",
+      "column_type": "text",
+      "primary_key": false,
+      "nullable": false,
+      "default": null,
+      "extra": "",
+      "comment": "Customer feedback text"
+    },
+    {
+      "name": "is_verified_purchase",
+      "data_type": "tinyint",
+      "column_type": "tinyint(1)",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "status",
+      "data_type": "enum",
+      "column_type": "enum('pending','approved','rejected')",
+      "primary_key": false,
+      "nullable": false,
+      "default": "approved",
+      "extra": "",
+      "comment": "Moderation status"
+    },
+    {
+      "name": "helpful_votes",
+      "data_type": "int",
+      "column_type": "int unsigned",
+      "primary_key": false,
+      "nullable": false,
+      "default": "0",
+      "extra": "",
+      "comment": ""
+    },
+    {
+      "name": "created_at",
+      "data_type": "datetime",
+      "column_type": "datetime",
+      "primary_key": false,
+      "nullable": false,
+      "default": "CURRENT_TIMESTAMP",
+      "extra": "DEFAULT_GENERATED",
+      "comment": ""
+    }
+  ],
+  "foreign_keys": [
+    {
+      "column": "user_id",
+      "referenced_table": "users",
+      "referenced_column": "id",
+      "constraint_name": "fk_rev_user"
+    },
+    {
+      "column": "product_id",
+      "referenced_table": "products",
+      "referenced_column": "id",
+      "constraint_name": "fk_rev_product"
+    },
+    {
+      "column": "order_id",
+      "referenced_table": "orders",
+      "referenced_column": "id",
+      "constraint_name": "fk_rev_order_user"
+    },
+    {
+      "column": "order_item_id",
+      "referenced_table": "order_items",
+      "referenced_column": "id",
+      "constraint_name": "fk_rev_order_item_product"
+    },
+    {
+      "column": "user_id",
+      "referenced_table": "orders",
+      "referenced_column": "user_id",
+      "constraint_name": "fk_rev_order_user"
+    },
+    {
+      "column": "order_id",
+      "referenced_table": "order_items",
+      "referenced_column": "order_id",
+      "constraint_name": "fk_rev_order_item_product"
+    },
+    {
+      "column": "product_id",
+      "referenced_table": "order_items",
+      "referenced_column": "product_id",
+      "constraint_name": "fk_rev_order_item_product"
+    }
+  ]
+}
