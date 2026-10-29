@@ -168,7 +168,7 @@ async def sql_generation_node(state: AgentState) -> Dict[str, Any]:
         }
     except Exception as e:
         err_msg = str(e)
-        extracted = _extract_sql_from_text(err_msg)
+        extracted = extract_sql_from_text(err_msg)
         if extracted:
             return {
                 "sql_query": extracted,

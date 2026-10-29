@@ -19,7 +19,7 @@ from fastapi.responses import StreamingResponse
 
 from auth.deps import get_current_user
 from chatbot.app.agent.orchestrator import agent_graph
-from chatbot.app.models import AgentState, ChatRequest, ChatResponse
+from chatbot.app.models import ChatRequest, ChatResponse
 from chatbot.config.settings import settings
 from chatbot.schemas import (
     ChatMessageRequest,
@@ -401,7 +401,8 @@ async def chat_message_poll(
 
     try:
         config = {"configurable": {"thread_id": conv_id}}
-        initial_state = AgentState(user_input=user_query)
+        # Partial input merges with the checkpoint so prior turns/history are preserved
+        initial_state = {"user_input": user_query}
         result = await agent_graph.ainvoke(initial_state, config=config)
 
         chunks: List[Dict[str, Any]] = []

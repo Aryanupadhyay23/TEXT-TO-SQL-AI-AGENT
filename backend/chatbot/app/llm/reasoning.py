@@ -52,6 +52,16 @@ async def query_understanding_node(state: AgentState) -> Dict[str, Any]:
             "sql_query": None,
             "sql_results": None,
             "error": None,
+            "final_answer": None,
+            "query_variations": [],
+            "search_queries": [],
+            "retrieved_examples": [],
+            "retrieved_rules": [],
+            "retrieved_tables": [],
+            "value_hints": [],
+            "is_context_sufficient": False,
+            "schema_context": {},
+            "retry_count": 0,
         })
         if is_out_of_scope and not res.get("direct_response"):
             res["direct_response"] = (
@@ -76,4 +86,14 @@ async def query_understanding_node(state: AgentState) -> Dict[str, Any]:
             "sql_query": None,
             "sql_results": None,
             "error": str(e),
+            "final_answer": None,
+            "query_variations": [],
+            "search_queries": [],
+            "retrieved_examples": [],
+            "retrieved_rules": [],
+            "retrieved_tables": [],
+            "value_hints": [],
+            "is_context_sufficient": False,
+            "schema_context": {},
+            "retry_count": 0,
         }

@@ -22,6 +22,7 @@ from conf.settings import (
     CHATBOT_DB_PORT,
     CHATBOT_DB_SSL,
     CHATBOT_DB_SSL_CA,
+    CHATBOT_DB_TIMEOUT,
 )
 
 logger = logging.getLogger(__name__)
@@ -38,6 +39,7 @@ class MySQLManager:
         ssl_ca: str = "",
         min_size: int = 4,
         max_size: int = 16,
+        timeout: int = 10,
     ):
         self._pool: Optional[asyncmy.Pool] = None
         self._last_error: Optional[Exception] = None
@@ -55,6 +57,8 @@ class MySQLManager:
             charset="utf8mb4",
             autocommit=False,
             pool_recycle=300,
+            connect_timeout=timeout,
+            read_timeout=timeout,
         )
         
         if use_ssl:
@@ -185,5 +189,6 @@ chatbot_db_manager = MySQLManager(
     CHATBOT_DB_PORT,
     use_ssl=CHATBOT_DB_SSL,
     ssl_ca=CHATBOT_DB_SSL_CA,
+    timeout=CHATBOT_DB_TIMEOUT,
 )
 db_manager = chatbot_db_manager

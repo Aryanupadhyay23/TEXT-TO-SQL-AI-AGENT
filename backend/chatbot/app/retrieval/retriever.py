@@ -14,6 +14,7 @@ from chatbot.app.models import AgentState
 from chatbot.app.schema.introspector import introspector
 from chatbot.app.retrieval.entity_matcher import entity_matcher
 from chatbot.app.retrieval.graph_expander import graph_expander
+from chatbot.app.retrieval.knowledge_files import load_business_rules
 from chatbot.app.retrieval.query_expander import query_expander
 from chatbot.config.settings import settings
 
@@ -190,17 +191,11 @@ def _get_or_create_bm25(vectorstore: Chroma, k: int) -> Optional[BM25Retriever]:
                         pass
             elif col_name == "business_knowledge":
                 rf = BACKEND_DIR / "schema_files" / "business_text" / "ecommerce_business_rules.json"
-                if rf.exists():
-                    try:
-                        with open(rf, "r", encoding="utf-8") as f:
-                            data = json.load(f)
-                        for r in data.get("rules", []):
-                            all_docs.append(Document(
-                                page_content=r.get("rule", ""),
-                                metadata={"rule": r.get("rule", ""), "topic": r.get("topic", "")}
-                            ))
-                    except Exception:
-                        pass
+                for r in load_business_rules(rf):
+                    all_docs.append(Document(
+                        page_content=f"{r['topic']}: {r['rule']}",
+                        metadata={"rule": r["rule"], "topic": r["topic"]}
+                    ))
 
         if not all_docs:
             return None
@@ -436,7 +431,7 @@ async def retriever_node(state: AgentState) -> Dict[str, Any]:
         if not introspector.is_allowed(tbl):
             continue
 
-        card = _load_schema_card(tbl)
+        card = await asyncio.to_thread(_load_schema_card, tbl)
         if card:
             raw_columns = card.get("columns", [])
             filtered_cols = [c for c in raw_columns if introspector.is_allowed(tbl, c.get("name"))]

@@ -6,6 +6,7 @@ SQL code blocks, interactive data tables, and suggestion chips.
 
 import streamlit as st
 import asyncio
+import html
 import uuid
 import pandas as pd
 from pathlib import Path
@@ -28,13 +29,14 @@ for p in [ROOT_DIR, FRONTEND_DIR, BACKEND_DIR]:
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
-import importlib
-import frontend.services.agent_service as agent_service_module
-importlib.reload(agent_service_module)
-stream_agent_workflow = agent_service_module.stream_agent_workflow
-
-from frontend.components import render_header, render_step_card
+from frontend.services.agent_service import stream_agent_workflow
+from frontend.components import render_header
 from frontend.config import SAMPLE_QUERIES
+
+
+def _escape(value) -> str:
+    """Escapes dynamic agent text before inserting it into unsafe HTML blocks."""
+    return html.escape(str(value or ""), quote=True)
 
 st.set_page_config(
     page_title="AI Chat Agent | E-Commerce Text-to-SQL",
@@ -87,9 +89,9 @@ for msg in st.session_state.messages:
                     for step in msg["steps"]:
                         st.markdown(
                             f"""
-                            <div class="step-card {step.get('status', 'success')}">
-                                <div class="step-title">{step.get('title')}</div>
-                                <div class="step-desc">{step.get('description')}</div>
+                            <div class="step-card {_escape(step.get('status', 'success'))}">
+                                <div class="step-title">{_escape(step.get('title'))}</div>
+                                <div class="step-desc">{_escape(step.get('description'))}</div>
                             </div>
                             """,
                             unsafe_allow_html=True,
@@ -212,9 +214,10 @@ if active_query:
                             })
 
                     elif node_name == "sql_execution":
-                        rows = values.get("sql_results") or []
+                        raw_rows = values.get("sql_results")
+                        rows = raw_rows if isinstance(raw_rows, list) else []
                         exec_err = values.get("error")
-                        if rows is not None and not exec_err:
+                        if raw_rows is not None and not exec_err:
                             results_df = pd.DataFrame(rows)
                             desc = f"Executed read-only query on live Aiven MySQL. Returned {len(rows)} row(s)."
                             steps.append({
@@ -229,7 +232,7 @@ if active_query:
                         else:
                             steps.append({
                                 "title": "5. Safe SQL Execution",
-                                "description": f"Error: {exec_err}",
+                                "description": f"Error: {exec_err or 'No result set returned.'}",
                                 "status": "error",
                             })
 

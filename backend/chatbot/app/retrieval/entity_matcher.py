@@ -52,7 +52,7 @@ class EntityMatcher:
 
         return entities
 
-    def match_entities(self, query: str, threshold: int = 80) -> List[Dict[str, Any]]:
+    def match_entities(self, query: str, threshold: int = 90) -> List[Dict[str, Any]]:
         """
         Scans a query against aliases of known database categorical values.
         Returns matched entity metadata and SQL condition hints.
@@ -93,9 +93,12 @@ class EntityMatcher:
                     })
                 continue
 
-            # 2. Fuzzy match across candidate phrases
+            # 2. Fuzzy match across candidate phrases (skip very short aliases, which over-match)
+            fuzzy_aliases = [a for a in aliases if len(a) >= 4]
             for phrase in phrases:
-                best_match = process.extractOne(phrase, aliases, scorer=fuzz.ratio, score_cutoff=threshold)
+                if len(phrase) < 4:
+                    continue
+                best_match = process.extractOne(phrase, fuzzy_aliases, scorer=fuzz.ratio, score_cutoff=threshold)
                 if best_match:
                     if sql_cond not in seen_conditions:
                         seen_conditions.add(sql_cond)

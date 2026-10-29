@@ -1,7 +1,3 @@
-# ==============================================================================
-# Chatbot Backend Dependencies (E-Commerce Text-to-SQL System)
-# ==============================================================================
-
 # Web Framework & API Server
 fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
@@ -27,6 +23,7 @@ langchain-community>=0.3.0
 langchain-ollama>=0.2.0
 langchain-chroma>=0.1.4
 langchain-openai>=0.2.0
+langchain-google-genai>=2.0.0
 
 # Vector Database, Embeddings & Retrieval
 chromadb>=0.5.5
@@ -40,3 +37,7 @@ sqlparse>=0.5.0
 # Conversation Checkpointing & Async Memory
 langgraph-checkpoint>=2.0.0
 aiosqlite>=0.20.0
+
+# Frontend & Data Presentation
+streamlit>=1.40.0
+pandas>=2.2.0

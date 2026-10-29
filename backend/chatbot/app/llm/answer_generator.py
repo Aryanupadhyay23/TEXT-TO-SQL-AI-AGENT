@@ -11,6 +11,10 @@ from chatbot.config.settings import settings
 # Lazy-initialized native LCEL chain for natural language generation
 _answer_chain = None
 
+# Bounded conversation memory: keep the most recent turns only
+MAX_HISTORY_TURNS = 10
+MAX_HISTORY_RESULT_ROWS = 5
+
 
 def _get_answer_chain():
     """Lazy-initializes the natural language answer generation chain using native LCEL."""
@@ -79,6 +83,11 @@ async def answer_generation_node(state: AgentState) -> Dict[str, Any]:
                 f"fulfilling the user's criteria. Every record in the data below is an exact match for the requested question. "
                 f"Synthesize and present these {row_count} record(s) directly to the user."
             )
+        elif state.error:
+            result_context_header = (
+                "The database query could not be completed due to a technical error. "
+                "Explain in plain business language that the request could not be fulfilled."
+            )
         else:
             result_context_header = "The database query executed successfully but returned 0 matching records."
 
@@ -103,9 +112,9 @@ async def answer_generation_node(state: AgentState) -> Dict[str, Any]:
         "question": state.user_input,
         "answer": final_answer,
         "sql": state.sql_query or "",
-        "results": state.sql_results or [],
+        "results": (state.sql_results or [])[:MAX_HISTORY_RESULT_ROWS],
     }
-    updated_history = list(state.history) + [turn_record]
+    updated_history = (list(state.history) + [turn_record])[-MAX_HISTORY_TURNS:]
 
     return {
         "final_answer": final_answer,

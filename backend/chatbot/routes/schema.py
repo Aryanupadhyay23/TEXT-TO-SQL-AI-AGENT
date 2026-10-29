@@ -143,7 +143,8 @@ async def get_table_records(
                     detail=f"Table '{clean_table}' not found in database.",
                 )
 
-            columns = [c["COLUMN_NAME"] for c in col_rows if introspector.is_allowed(clean_table, c["COLUMN_NAME"])]
+            allowed_cols = [c for c in col_rows if introspector.is_allowed(clean_table, c["COLUMN_NAME"])]
+            columns = [c["COLUMN_NAME"] for c in allowed_cols]
             if not columns:
                 return {
                     "table_name": clean_table,
@@ -156,13 +157,21 @@ async def get_table_records(
 
             col_select = ", ".join(f"`{c}`" for c in columns)
 
+            # Stable pagination: order by the primary key, or the first allowed column
+            pk_cols = [c["COLUMN_NAME"] for c in allowed_cols if c.get("COLUMN_KEY") == "PRI"]
+            order_column = pk_cols[0] if pk_cols else columns[0]
+            order_clause = f"ORDER BY `{order_column}`"
+
             # 2. Build Count and Select queries
             where_clause = ""
             params: list = []
 
             if search and search.strip():
                 search_term = f"%{search.strip()}%"
-                text_cols = [c["COLUMN_NAME"] for c in col_rows if c["DATA_TYPE"] in ("varchar", "text", "char", "mediumtext", "longtext")]
+                text_cols = [
+                    c["COLUMN_NAME"] for c in allowed_cols
+                    if c["DATA_TYPE"] in ("varchar", "text", "char", "mediumtext", "longtext")
+                ]
                 if text_cols:
                     conditions = [f"`{c}` LIKE %s" for c in text_cols]
                     where_clause = f"WHERE {' OR '.join(conditions)}"
@@ -174,8 +183,11 @@ async def get_table_records(
             count_res = await cursor.fetchone()
             total_records = count_res["total"] if count_res else 0
 
-            # Fetch rows with pagination
-            select_sql = f"SELECT {col_select} FROM `{clean_table}` {where_clause} LIMIT %s OFFSET %s"
+            # Fetch rows with stable ordering and pagination
+            select_sql = (
+                f"SELECT {col_select} FROM `{clean_table}` {where_clause} "
+                f"{order_clause} LIMIT %s OFFSET %s"
+            )
             fetch_params = params + [limit, offset]
             await cursor.execute(select_sql, tuple(fetch_params))
             raw_rows = await cursor.fetchall()

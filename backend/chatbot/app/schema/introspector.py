@@ -1,11 +1,15 @@
-import json
 import asyncio
+import json
+import time
 from pathlib import Path
-from chatbot.app.database.connection import db_manager
+from typing import Any, Iterable
+
+from chatbot.app.database.connection import build_ssl_context, db_manager, use_sync_db_fallback
 from chatbot.config.settings import settings
 
 PERMISSIONS_FILE = Path(__file__).resolve().parent.parent.parent / "config" / "schema_permissions.json"
 SCHEMA_FILES_DIR = Path(__file__).resolve().parent.parent.parent / "schema_files"
+FALLBACK_RETRY_SECONDS = 60
 
 
 class SchemaIntrospector:
@@ -14,6 +18,8 @@ class SchemaIntrospector:
     def __init__(self):
         self.permissions = self._load_permissions()
         self._schema_cache: dict | None = None
+        self._fallback_cache: dict | None = None
+        self._fallback_until: float = 0.0
 
     def _load_permissions(self) -> dict:
         """Loads allowed/blocked tables and columns from config."""
@@ -88,20 +94,85 @@ class SchemaIntrospector:
 
         return schema
 
-    def _introspect_sync(self) -> dict:
-        """Fetches schema from MySQL using thread-safe PyMySQL, filters by permissions, and caches in memory."""
+    def _apply_columns(self, schema: dict, rows: Iterable[dict]) -> None:
+        for row in rows:
+            tbl = row["TABLE_NAME"]
+            col = row["COLUMN_NAME"]
+            if not self.is_allowed(tbl, col):
+                continue
+
+            if tbl not in schema["tables"]:
+                schema["tables"][tbl] = {"columns": [], "foreign_keys": []}
+
+            schema["tables"][tbl]["columns"].append({
+                "name": col,
+                "type": row["DATA_TYPE"],
+                "primary_key": (row["COLUMN_KEY"] == "PRI"),
+            })
+
+    def _apply_relationships(self, schema: dict, rows: Iterable[dict]) -> None:
+        for row in rows:
+            t1, c1 = row["TABLE_NAME"], row["COLUMN_NAME"]
+            t2, c2 = row["REFERENCED_TABLE_NAME"], row["REFERENCED_COLUMN_NAME"]
+
+            if self.is_allowed(t1, c1) and self.is_allowed(t2, c2):
+                rel = {"from_table": t1, "from_column": c1, "to_table": t2, "to_column": c2}
+                if t1 in schema["tables"]:
+                    schema["tables"][t1]["foreign_keys"].append(rel)
+                schema["relationships"].append(rel)
+
+    def _cache_or_fallback(self, schema: dict) -> dict:
+        """Serves the schema-file fallback briefly, retrying the live DB once the TTL expires."""
+        if self._schema_cache is not None:
+            return self._schema_cache
+        now = time.monotonic()
+        if self._fallback_cache is None or now >= self._fallback_until:
+            self._fallback_cache = self._load_fallback_from_schema_files()
+            self._fallback_until = now + FALLBACK_RETRY_SECONDS
+        return self._fallback_cache
+
+    async def _introspect_async(self) -> dict:
+        """Fetches schema from MySQL over the native async pool and caches it in memory."""
+        if use_sync_db_fallback():
+            return await asyncio.to_thread(self._introspect_sync)
+
         schema = {"database": settings.DB_NAME, "tables": {}, "relationships": []}
+
+        try:
+            async with db_manager.acquire_dict_cursor() as cursor:
+                await cursor.execute(
+                    """
+                    SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY
+                    FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA = %s
+                    ORDER BY TABLE_NAME, ORDINAL_POSITION;
+                    """,
+                    (settings.DB_NAME,),
+                )
+                self._apply_columns(schema, await cursor.fetchall())
+
+                await cursor.execute(
+                    """
+                    SELECT TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+                    FROM information_schema.KEY_COLUMN_USAGE
+                    WHERE TABLE_SCHEMA = %s AND REFERENCED_TABLE_NAME IS NOT NULL;
+                    """,
+                    (settings.DB_NAME,),
+                )
+                self._apply_relationships(schema, await cursor.fetchall())
+
+            self._schema_cache = schema
+            return schema
+        except Exception:
+            return self._cache_or_fallback(schema)
+
+    def _introspect_sync(self) -> dict:
+        """Synchronous PyMySQL fallback for non-async callers (Streamlit frontend)."""
+        schema: dict[str, Any] = {"database": settings.DB_NAME, "tables": {}, "relationships": []}
 
         try:
             import pymysql
             from pymysql.cursors import DictCursor as PyMySQLDictCursor
-            import ssl
-
-            ssl_ctx = None
-            if settings.DB_SSL:
-                ssl_ctx = ssl.create_default_context()
-                ssl_ctx.check_hostname = False
-                ssl_ctx.verify_mode = ssl.CERT_NONE
 
             conn = pymysql.connect(
                 host=settings.DB_HOST,
@@ -110,81 +181,61 @@ class SchemaIntrospector:
                 password=settings.DB_PASSWORD,
                 database=settings.DB_NAME,
                 charset="utf8mb4",
-                ssl=ssl_ctx,
+                ssl=build_ssl_context(),
                 cursorclass=PyMySQLDictCursor,
                 connect_timeout=settings.DB_TIMEOUT_SECONDS,
                 read_timeout=settings.DB_TIMEOUT_SECONDS,
             )
             try:
                 with conn.cursor() as cursor:
-                    # 1. Fetch tables and columns
                     cursor.execute(
                         """
-                        SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY 
-                        FROM information_schema.COLUMNS 
-                        WHERE TABLE_SCHEMA = %s 
+                        SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, COLUMN_KEY
+                        FROM information_schema.COLUMNS
+                        WHERE TABLE_SCHEMA = %s
                         ORDER BY TABLE_NAME, ORDINAL_POSITION;
                         """,
                         (settings.DB_NAME,),
                     )
-                    rows = cursor.fetchall()
-                    for row in rows:
-                        tbl, col, dtype, key = row["TABLE_NAME"], row["COLUMN_NAME"], row["DATA_TYPE"], row["COLUMN_KEY"]
-                        if not self.is_allowed(tbl, col):
-                            continue
+                    self._apply_columns(schema, cursor.fetchall())
 
-                        if tbl not in schema["tables"]:
-                            schema["tables"][tbl] = {"columns": [], "foreign_keys": []}
-
-                        schema["tables"][tbl]["columns"].append({
-                            "name": col,
-                            "type": dtype,
-                            "primary_key": (key == "PRI"),
-                        })
-
-                    # 2. Fetch foreign keys (relationships)
                     cursor.execute(
                         """
-                        SELECT TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME 
-                        FROM information_schema.KEY_COLUMN_USAGE 
+                        SELECT TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+                        FROM information_schema.KEY_COLUMN_USAGE
                         WHERE TABLE_SCHEMA = %s AND REFERENCED_TABLE_NAME IS NOT NULL;
                         """,
                         (settings.DB_NAME,),
                     )
-                    rows = cursor.fetchall()
-                    for row in rows:
-                        t1, c1 = row["TABLE_NAME"], row["COLUMN_NAME"]
-                        t2, c2 = row["REFERENCED_TABLE_NAME"], row["REFERENCED_COLUMN_NAME"]
-
-                        if self.is_allowed(t1, c1) and self.is_allowed(t2, c2):
-                            rel = {"from_table": t1, "from_column": c1, "to_table": t2, "to_column": c2}
-                            if t1 in schema["tables"]:
-                                schema["tables"][t1]["foreign_keys"].append(rel)
-                            schema["relationships"].append(rel)
+                    self._apply_relationships(schema, cursor.fetchall())
             finally:
                 conn.close()
 
             self._schema_cache = schema
             return schema
         except Exception:
-            if not self._schema_cache:
-                self._schema_cache = self._load_fallback_from_schema_files()
-            return self._schema_cache or schema
+            return self._cache_or_fallback(schema)
 
     async def introspect(self) -> dict:
-        """Fetches schema from MySQL using PyMySQL in a thread pool."""
-        return await asyncio.to_thread(self._introspect_sync)
+        """Fetches schema from MySQL over the native async pool."""
+        return await self._introspect_async()
 
     async def aget_schema(self, force_refresh: bool = False) -> dict:
-        """Async version: returns cached schema or introspects database."""
-        if not force_refresh and self._schema_cache is not None:
-            return self._schema_cache
-        return await self.introspect()
+        """Returns cached schema or introspects the database asynchronously."""
+        if not force_refresh:
+            if self._schema_cache is not None:
+                return self._schema_cache
+            if self._fallback_cache is not None and time.monotonic() < self._fallback_until:
+                return self._fallback_cache
+        return await self._introspect_async()
 
     def get_schema(self, force_refresh: bool = False) -> dict:
-        """Returns cached schema or introspects database synchronously."""
-        if not force_refresh and self._schema_cache is not None:
-            return self._schema_cache
+        """Returns cached schema or introspects the database synchronously."""
+        if not force_refresh:
+            if self._schema_cache is not None:
+                return self._schema_cache
+            if self._fallback_cache is not None and time.monotonic() < self._fallback_until:
+                return self._fallback_cache
         return self._introspect_sync()
 
 

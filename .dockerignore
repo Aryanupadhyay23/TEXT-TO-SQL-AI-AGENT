@@ -1,66 +1,45 @@
 # ==============================================================================
-# Version Control & Metadata
+# Version Control & Repository Metadata
 # ==============================================================================
 .git
+.github
 .gitignore
 .gitattributes
-.github
 .dockerignore
+README.md
+appspec.yml
+deployment.zip
+*.zip
 
 # ==============================================================================
-# Secrets & Environment Variables (NEVER BUNDLE IN IMAGE)
+# Secrets & Environment Files (Never bundle into container)
 # ==============================================================================
-.env
-.env.*
-*.env
-*.env.*
-**/.env
-**/.env.*
-backend/.env
-backend/.env.*
-backend/.env.tts
+.env*
+*.env*
+**/.env*
+backend/.env*
+.streamlit/secrets.toml
 
 # ==============================================================================
-# Node & Frontend Dependencies and Build Outputs
+# Python Virtual Environments, Bytecode & Caches
 # ==============================================================================
-node_modules
-**/node_modules
-frontend/node_modules
-frontend/dist
-frontend/build
-dist
-build
-*.tsbuildinfo
-frontend/tsconfig.tsbuildinfo
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# ==============================================================================
-# Python Virtual Environments & Bytecode
-# ==============================================================================
-.venv
-venv
-**/venv
-**/.venv
-ENV
-env
 __pycache__
 **/__pycache__
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
-.ruff_cache
+.venv
+**/venv
+**/.venv
+env
 .pytest_cache
+.ruff_cache
 .mypy_cache
 
 # ==============================================================================
-# Databases, Local Checkpoints & Vector Storage
+# Databases, Checkpoints & Chroma Vector Storage
 # ==============================================================================
-*.sqlite
-*.sqlite3
-*.sqlite-shm
-*.sqlite-wal
+*.sqlite*
 *.db
 backend/chatbot/data/*.sqlite*
 backend/chatbot/data/sqlite_storage
@@ -69,7 +48,7 @@ backend/chatbot/data/chroma
 chroma
 
 # ==============================================================================
-# Logs & System Files
+# Logs & System / IDE Artifacts
 # ==============================================================================
 .logs
 **/.logs
@@ -78,11 +57,6 @@ logs
 *.log
 .DS_Store
 Thumbs.db
-ehthumbs.db
-
-# ==============================================================================
-# IDEs & Editor Files
-# ==============================================================================
 .idea
 .vscode
 *.swp

@@ -4,12 +4,20 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load single .env.tts file from backend root
-backend_env = Path(__file__).resolve().parent.parent.parent / ".env.tts"
-if backend_env.exists():
-    load_dotenv(dotenv_path=backend_env, override=True)
+# Load universal .env.tts file
+_config_dir = Path(__file__).resolve().parent
+_backend_dir = _config_dir.parent.parent
+_root_dir = _backend_dir.parent
+
+_root_env_tts = _root_dir / ".env.tts"
+_backend_env_tts = _backend_dir / ".env.tts"
+
+if _root_env_tts.exists():
+    load_dotenv(dotenv_path=_root_env_tts, override=True)
+elif _backend_env_tts.exists():
+    load_dotenv(dotenv_path=_backend_env_tts, override=True)
 else:
-    load_dotenv()
+    load_dotenv(override=True)
 
 
 def _to_bool(val: str, default: bool = True) -> bool:
@@ -65,11 +73,11 @@ class Settings:
         or "ollama"
     )
     LLM_MODEL: str = (
-        os.getenv("OLLAMA_MODEL")
-        or os.getenv("LLM_MODEL")
+        os.getenv("LLM_MODEL")
+        or os.getenv("OLLAMA_MODEL")
         or os.getenv("UNIFIED_LLM_MODEL")
         or os.getenv("REASONING_LLM_MODEL")
-        or "gemma4:31b-cloud"
+        or "gemini-2.5-flash"
     )
     OLLAMA_NUM_CTX: int = _to_int(os.getenv("OLLAMA_NUM_CTX") or os.getenv("LLM_NUM_CTX"), 131072)
 
@@ -102,7 +110,36 @@ class Settings:
 
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
-    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+    GEMINI_API_KEY: str = (
+        os.getenv("GEMINI_API_KEY")
+        or os.getenv("GOOGLE_API_KEY")
+        or os.getenv("GOOGLE_API_KEY_ONE")
+        or ""
+    )
+    GOOGLE_API_KEY_ONE: str = os.getenv("GOOGLE_API_KEY_ONE", "")
+    GOOGLE_API_KEY_TWO: str = os.getenv("GOOGLE_API_KEY_TWO", "")
+    GOOGLE_API_KEY_THIRD: str = (
+        os.getenv("GEMINI_API_KEY_THREE")
+        or os.getenv("GOOGLE_API_KEY_THREE")
+        or os.getenv("GOOGLE_API_KEY_THIRD", "")
+    )
+
+    @property
+    def google_api_keys(self) -> list[str]:
+        """Returns non-empty Google Gemini API keys in fallback priority order."""
+        candidates = [
+            self.GOOGLE_API_KEY_ONE,
+            self.GOOGLE_API_KEY_TWO,
+            self.GOOGLE_API_KEY_THIRD,
+            self.GEMINI_API_KEY,
+            os.getenv("GOOGLE_API_KEY", ""),
+        ]
+        keys: list[str] = []
+        for k in candidates:
+            k_clean = (k or "").strip()
+            if k_clean and k_clean not in keys:
+                keys.append(k_clean)
+        return keys
 
     # Nomic Embedding Configuration
     EMBEDDING_MODEL_KEY: str = os.getenv("EMBEDDING_MODEL_KEY", "")

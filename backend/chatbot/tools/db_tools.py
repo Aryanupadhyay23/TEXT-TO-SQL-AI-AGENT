@@ -1,11 +1,12 @@
 """Database live execution and introspection tool (run_sql)."""
 
 from langchain_core.tools import tool
+
 from chatbot.utils.formatting import format_markdown_table
 
 
 @tool
-def run_sql(sql: str) -> str:
+async def run_sql(sql: str) -> str:
     """Executes a read-only SQL query on the live MySQL database (ecommerce_db).
     Use this to:
     1. Inspect tables or schema: 'SHOW TABLES;', 'DESCRIBE orders;', or 'SHOW CREATE TABLE shipments;'
@@ -14,6 +15,10 @@ def run_sql(sql: str) -> str:
     Input: A valid read-only SQL statement (SELECT, SHOW, DESCRIBE, EXPLAIN).
     Output: Markdown formatted table or exact MySQL error message.
     """
+    # Imported lazily to avoid a circular import at package init time.
+    from chatbot.app.sql.executor import executor
+    from chatbot.app.sql.validator import validator
+
     clean_query = sql.strip().rstrip(";")
     if not clean_query:
         return "Error: Empty SQL query provided."
@@ -24,16 +29,12 @@ def run_sql(sql: str) -> str:
         clean_query = f"{clean_query} LIMIT 20"
 
     # Read-only and permission validation
-    from chatbot.app.sql.validator import validator
-    from chatbot.app.sql.executor import SQLExecutor
-
     is_valid, err = validator.validate(clean_query)
     if not is_valid:
         return f"Validation Error: {err}"
 
     try:
-        executor = SQLExecutor()
-        result = executor.execute_sync(clean_query)
+        result = await executor.execute(clean_query)
         if not result["success"]:
             return f"MySQL Execution Error: {result.get('error', 'Unknown error')}"
 

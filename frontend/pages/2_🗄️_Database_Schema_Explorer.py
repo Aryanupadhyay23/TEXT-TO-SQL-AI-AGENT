@@ -103,9 +103,9 @@ with right_col:
             for col in columns_data:
                 rows.append({
                     "Column Name": col.get("name"),
-                    "Type": col.get("type"),
+                    "Type": col.get("column_type") or col.get("data_type", ""),
                     "Nullable": "YES" if col.get("nullable") else "NO",
-                    "Key": col.get("key", ""),
+                    "Key": "PK" if col.get("primary_key") else "",
                     "Default": str(col.get("default", "")),
                     "Extra": col.get("extra", ""),
                 })
@@ -145,9 +145,9 @@ with right_col:
             for fk in fks:
                 fk_rows.append({
                     "Constraint": fk.get("constraint_name", "N/A"),
-                    "Column": fk.get("column_name", "N/A"),
-                    "Referenced Table": fk.get("referenced_table_name", "N/A"),
-                    "Referenced Column": fk.get("referenced_column_name", "N/A"),
+                    "Column": fk.get("column") or fk.get("column_name", "N/A"),
+                    "Referenced Table": fk.get("referenced_table") or fk.get("referenced_table_name", "N/A"),
+                    "Referenced Column": fk.get("referenced_column") or fk.get("referenced_column_name", "N/A"),
                 })
             st.dataframe(pd.DataFrame(fk_rows), use_container_width=True, hide_index=True)
         else:

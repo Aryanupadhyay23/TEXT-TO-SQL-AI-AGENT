@@ -1,22 +1,23 @@
 name: AI Chatbot Production Pipeline
 
 on:
-  push:
-    branches:
-      - main
-      - master
+  # Push triggers disabled for now while deployment is turned off
+  # push:
+  #   branches:
+  #     - main
+  #     - master
   workflow_dispatch:
     inputs:
       execute_pipeline:
         description: "Authorize CI/CD and Deployments?"
         type: boolean
         required: true
-        default: true
+        default: false
       enable_aws:
         description: "Deploy to AWS (ECR/S3/CodeDeploy)?"
         type: boolean
         required: true
-        default: true
+        default: false
 
 # Ensure only one deployment runs at a time per branch
 concurrency:
@@ -27,11 +28,11 @@ permissions:
   contents: write
 
 env:
-  # Master pipeline execution permission toggle
-  EXECUTE_PIPELINE: "true"
+  # Master pipeline execution permission toggle (DISABLED FOR NOW)
+  EXECUTE_PIPELINE: "false"
 
-  # AWS platform deployment toggle
-  ENABLE_AWS: "true"
+  # AWS platform deployment toggle (DISABLED FOR NOW)
+  ENABLE_AWS: "false"
 
   # AWS cloud resource settings
   AWS_REGION: ap-southeast-2
@@ -59,17 +60,19 @@ jobs:
             echo "Pipeline execution AUTHORIZED."
           else
             echo "authorized=false" >> $GITHUB_OUTPUT
-            echo "Pipeline execution BLOCKED (EXECUTE_PIPELINE is '${{ env.EXECUTE_PIPELINE }}')."
+            echo "Pipeline execution DISABLED (EXECUTE_PIPELINE is '${{ env.EXECUTE_PIPELINE }}')."
           fi
 
-          if [ "${{ env.ENABLE_AWS }}" = "true" ] && [ "${{ inputs.enable_aws }}" != "false" ]; then
+          if [ "${{ env.ENABLE_AWS }}" = "true" ] && [ "${{ inputs.enable_aws }}" = "true" ]; then
             echo "deploy_aws=true" >> $GITHUB_OUTPUT
+            echo "AWS Deployment AUTHORIZED."
           else
             echo "deploy_aws=false" >> $GITHUB_OUTPUT
+            echo "AWS Deployment TURNED OFF."
           fi
 
   # ----------------------------------------------------------------------------
-  # 2. CI: Code validation, Frontend build, Linting & Python smoke tests
+  # 2. CI: Code validation, Linting & Python smoke tests
   # ----------------------------------------------------------------------------
   ci:
     name: CI - Code Validation & Smoke Tests
@@ -81,49 +84,36 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # Frontend Validation
-      - name: Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Validate & Build React Frontend
-        run: |
-          cd frontend
-          npm ci
-          npm run build
-
-      # Backend Validation
+      # Python Environment Setup (Backend & Streamlit Frontend)
       - name: Setup Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: backend/requirements.txt
+          cache-dependency-path: requirements.txt
 
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 -r backend/requirements.txt
+          pip install flake8 -r requirements.txt
 
       - name: Lint Critical Python Syntax Errors
         run: |
-          flake8 backend --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 backend frontend --count --select=E9,F63,F7,F82 --show-source --statistics
 
-      - name: Validate Python Compilation
+      - name: Validate Python Compilation (Backend & Frontend)
         run: |
           python -c "
           import py_compile, os
           count = 0
-          for root, _, files in os.walk('backend'):
-              if any(p in root for p in ['.git', '__pycache__', '.venv']): continue
-              for f in files:
-                  if f.endswith('.py'):
-                      py_compile.compile(os.path.join(root, f), doraise=True)
-                      count += 1
-          print(f'Successfully compiled {count} Python backend files with zero syntax errors.')
+          for folder in ['backend', 'frontend']:
+              for root, _, files in os.walk(folder):
+                  if any(p in root for p in ['.git', '__pycache__', '.venv']): continue
+                  for f in files:
+                      if f.endswith('.py'):
+                          py_compile.compile(os.path.join(root, f), doraise=True)
+                          count += 1
+          print(f'Successfully compiled {count} Python backend and frontend files with zero syntax errors.')
           "
 
       - name: Run Core Backend Smoke Test
@@ -178,7 +168,7 @@ jobs:
         run: |
           docker run -d --name test_container \
             -e SKIP_CHROMA_TRAIN=true \
-            -p 8503:80 \
+            -p 8503:8501 \
             -p 8002:8000 \
             app:${{ github.sha }}
 
@@ -202,9 +192,9 @@ jobs:
             exit 1
           fi
 
-          # Verify both FastAPI direct health and Nginx reverse proxy health
+          # Verify both FastAPI direct health and Streamlit frontend health
           curl --fail http://localhost:8002/health
-          curl --fail http://localhost:8503/health
+          curl --fail http://localhost:8503/_stcore/health
           docker stop test_container
           docker rm test_container
 

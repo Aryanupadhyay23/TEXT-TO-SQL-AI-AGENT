@@ -5,7 +5,7 @@ inspect corporate business rules, and add new training pairs.
 """
 
 import streamlit as st
-import json
+import html
 from pathlib import Path
 import sys
 
@@ -21,7 +21,6 @@ for p in [ROOT_DIR, FRONTEND_DIR, BACKEND_DIR]:
 
 from frontend.components import render_header
 from frontend.services import load_all_sql_pairs, load_all_business_rules, add_golden_sql_pair
-from frontend.config import SCHEMA_FILES_DIR as SCHEMA_DIR
 
 st.set_page_config(
     page_title="Knowledge & Memories | ChromaDB",
@@ -100,10 +99,10 @@ with tab_rules:
             f"""
             <div class="glass-card" style="margin-bottom: 12px; border-left: 4px solid #38bdf8;">
                 <div style="font-weight: 700; color: #38bdf8; font-size: 14px; margin-bottom: 4px;">
-                    📌 {r.get('topic', 'Business Rule')}
+                    📌 {html.escape(str(r.get('topic', 'Business Rule')))}
                 </div>
                 <div style="color: #e4e4e7; font-size: 13px; line-height: 1.5;">
-                    {r.get('rule', '')}
+                    {html.escape(str(r.get('rule', '')))}
                 </div>
             </div>
             """,
@@ -138,7 +137,7 @@ with tab_add:
             if not form_question.strip() or not form_sql.strip():
                 st.error("Please provide both a question and a valid SQL query.")
             else:
-                ok = add_golden_sql_pair(
+                ok, message = add_golden_sql_pair(
                     domain_file=form_domain,
                     question=form_question,
                     sql=form_sql,
@@ -146,7 +145,7 @@ with tab_add:
                     difficulty=form_difficulty,
                 )
                 if ok:
-                    st.success(f"Successfully added golden pair to `{form_domain}`! It is now active for hybrid RAG retrieval.")
+                    st.success(message)
                     st.rerun()
                 else:
-                    st.error(f"Failed to save training pair to `{form_domain}`.")
+                    st.error(message)

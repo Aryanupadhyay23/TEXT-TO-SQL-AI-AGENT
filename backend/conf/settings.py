@@ -2,12 +2,20 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load single .env.tts from backend root
-backend_env = Path(__file__).resolve().parent.parent / ".env.tts"
-if backend_env.exists():
-    load_dotenv(dotenv_path=backend_env, override=True)
+# Load universal .env.tts file
+_conf_dir = Path(__file__).resolve().parent
+_backend_dir = _conf_dir.parent
+_root_dir = _backend_dir.parent
+
+_root_env_tts = _root_dir / ".env.tts"
+_backend_env_tts = _backend_dir / ".env.tts"
+
+if _root_env_tts.exists():
+    load_dotenv(dotenv_path=_root_env_tts, override=True)
+elif _backend_env_tts.exists():
+    load_dotenv(dotenv_path=_backend_env_tts, override=True)
 else:
-    load_dotenv()
+    load_dotenv(override=True)
 
 # Chatbot Database settings
 CHATBOT_DB_NAME = os.getenv("CHATBOT_DB_NAME", "ecommerce_db")
@@ -17,6 +25,7 @@ CHATBOT_DB_HOST = os.getenv("CHATBOT_DB_HOST", "localhost")
 CHATBOT_DB_PORT = int(os.getenv("CHATBOT_DB_PORT", "3306"))
 CHATBOT_DB_SSL = os.getenv("CHATBOT_DB_SSL", "true" if "aivencloud" in (os.getenv("CHATBOT_DB_HOST") or "") else "false").lower() in ("true", "1", "yes", "required")
 CHATBOT_DB_SSL_CA = os.getenv("CHATBOT_DB_SSL_CA", "")
+CHATBOT_DB_TIMEOUT = int(os.getenv("CHATBOT_DB_TIMEOUT") or os.getenv("DB_TIMEOUT_SECONDS") or "10")
 
 # Fallback generic DB vars
 DB_NAME = CHATBOT_DB_NAME

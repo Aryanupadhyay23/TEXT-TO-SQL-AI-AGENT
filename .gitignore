@@ -1,16 +1,14 @@
 # ==============================================================================
-# Environment Variables & Secrets (CRITICAL)
+# Environment Variables & Secrets
 # ==============================================================================
 .env
 .env.*
 *.env
 *.env.*
-.env.tts
 *.env.tts
-**/.env.tts
-backend/.env
-backend/.env.*
+backend/.env*
 backend/.env.tts
+.streamlit/secrets.toml
 
 # ==============================================================================
 # Python & Bytecode
@@ -21,72 +19,42 @@ __pycache__/
 *.so
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
-MANIFEST
 
 # Virtual Environments
 .venv/
 venv/
 ENV/
 env/
-env.bak/
-venv.bak/
 
-# Testing & Linters
-.ruff_cache/
+# Testing, Linting & Caches
 .pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
+.ruff_cache/
 .mypy_cache/
-.pyre/
-.pytype/
+.coverage
+htmlcov/
 
 # ==============================================================================
-# Node & Frontend
-# ==============================================================================
-node_modules/
-frontend/node_modules/
-frontend/dist/
-frontend/build/
-frontend/tsconfig.tsbuildinfo
-*.tsbuildinfo
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# ==============================================================================
-# Databases, Checkpoints & Local Storage
+# Databases, Chroma Vectorstore & Checkpoints
 # ==============================================================================
 *.sqlite
 *.sqlite3
 *.sqlite-shm
 *.sqlite-wal
 *.db
-backend/chatbot/data/*.sqlite
-backend/chatbot/data/*.sqlite-*
+backend/chatbot/data/*.sqlite*
 backend/chatbot/data/sqlite_storage/
 backend/chatbot/data/chroma/
 chroma/
 
 # ==============================================================================
-# Logs & Temporary Files
+# Deployment Bundles & Logs
 # ==============================================================================
+deployment.zip
+*.zip
+*.tar.gz
 logs/
 *.log
 .logs/
@@ -95,22 +63,15 @@ backend/.logs/
 *.temp
 
 # ==============================================================================
-# OS & Editor Files
+# Operating System & IDE Files
 # ==============================================================================
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+ehthumbs.db
 [Dd]esktop.ini
 
-# IDEs
 .idea/
 .vscode/
-*.sublime-project
-*.sublime-workspace
 *.swp
 *.swo
 *~
